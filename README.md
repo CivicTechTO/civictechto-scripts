@@ -1,6 +1,6 @@
 # CivicTechTO Scripts
 
-Helper scripts for CivicTechTO wrapped in a simple CLI.
+Helper scripts for CivicTechTO organizing tasks.
 
 We use this as a catch-all for simple scripts that help with organizing
 tasks.
