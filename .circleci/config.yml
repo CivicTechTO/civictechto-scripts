@@ -1,0 +1,48 @@
+version: 2
+
+jobs:
+  pre_hacknight:
+    docker:
+      - image: circleci/python:3.6.2
+    environment:
+      - TRELLO_CARD_IGNORE_LIST: "Civic Tech 101"
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "requirements.txt" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+
+      - run:
+          name: install dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            # When fetching package from new git repo, use (w)ipe action
+            pip install -r requirements.txt --exists-action w
+
+      - save_cache:
+          paths:
+            - ./venv
+          key: v1-dependencies-{{ checksum "requirements.txt" }}
+
+      - run:
+          name: run script
+          command: |
+            . venv/bin/activate
+            python3 clean_pitch_list.py
+
+workflows:
+  version: 2
+  pre_hacknight:
+    jobs:
+      - reset_pitches
+    trigger:
+      - schedule:
+        # Every Tues at 6pm ET
+        cron: "0 22 * * TUE"
+        filters:
+          branches:
+            only: master
