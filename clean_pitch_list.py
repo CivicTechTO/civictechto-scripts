@@ -13,7 +13,7 @@ TRELLO_APP_KEY = os.getenv('TRELLO_APP_KEY')
 TRELLO_SECRET = os.getenv('TRELLO_SECRET')
 LIST_TONIGHT = "Tonight's Pitches"
 LIST_ACTIVE = 'Active'
-CARD_IGNORE_LIST = os.getenv('CARD_IGNORE_LIST').split(',')
+CARD_IGNORE_LIST = os.getenv('TRELLO_CARD_IGNORE_LIST').split(',')
 
 board_url = 'https://trello.com/b/EVvNEGK5/hacknight-projects'
 m = re.search('^https://trello.com/b/(?P<board_id>.+?)(?:/.*)?$', board_url)
