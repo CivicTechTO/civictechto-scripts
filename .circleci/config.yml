@@ -46,7 +46,7 @@ workflows:
     triggers:
       - schedule:
           # Every Tues at 6pm ET
-          cron: "0 22 * * TUE"
+          cron: "0 22 * * 2"
           filters:
             branches:
               only: master
