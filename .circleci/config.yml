@@ -1,7 +1,11 @@
+# Python CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-python/ for more details
+#
 version: 2
 
 jobs:
-  pre_hacknight:
+  reset_pitches:
     docker:
       - image: circleci/python:3.6.2
     environment:
@@ -41,8 +45,8 @@ workflows:
       - reset_pitches
     trigger:
       - schedule:
-        # Every Tues at 6pm ET
-        cron: "0 22 * * TUE"
-        filters:
-          branches:
-            only: master
+          # Every Tues at 6pm ET
+          cron: "0 22 * * TUE"
+          filters:
+            branches:
+              only: master
