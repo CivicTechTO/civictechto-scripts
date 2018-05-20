@@ -5,7 +5,7 @@
 version: 2
 
 jobs:
-  reset_pitches:
+  default: &default_job
     docker:
       - image: circleci/python:3.6.2
     environment:
@@ -13,13 +13,13 @@ jobs:
     steps:
       - checkout
 
-      - restore_cache:
+      - restore_cache: &restore_cache
           keys:
           - v1-dependencies-{{ checksum "requirements.txt" }}
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
-      - run:
+      - run: &install_dependencies
           name: install dependencies
           command: |
             python3 -m venv venv
@@ -27,21 +27,56 @@ jobs:
             # When fetching package from new git repo, use (w)ipe action
             pip install -r requirements.txt --exists-action w
 
-      - save_cache:
+      - save_cache: &save_cache
           paths:
             - ./venv
           key: v1-dependencies-{{ checksum "requirements.txt" }}
 
+  reset_pitches:
+    <<: *default_job
+    steps:
+      - checkout
+      - restore_cache: {<<: *restore_cache}
+      - run: {<<: *install_dependencies}
+      - save_cache: {<<: *save_cache}
       - run:
           name: run script
           command: |
             . venv/bin/activate
             python3 clean_pitch_list.py
 
+  backup_trello:
+    <<: *default_job
+    steps:
+      - checkout
+      - restore_cache: {<<: *restore_cache}
+      - run: {<<: *install_dependencies}
+      - save_cache: {<<: *save_cache}
+      - run:
+          name: run script
+          command: |
+            . venv/bin/activate
+            #python3 backup_trello.py
+
+  save_pitch_data:
+    <<: *default_job
+    steps:
+      - checkout
+      - restore_cache: {<<: *restore_cache}
+      - run: {<<: *install_dependencies}
+      - save_cache: {<<: *save_cache}
+      - run:
+          name: run script
+          command: |
+            . venv/bin/activate
+            #python3 save_pitch_data.py
+
 workflows:
   version: 2
   pre_hacknight:
     jobs:
+      - backup_trello
+      - save_pitch_data
       - reset_pitches
     triggers:
       - schedule:
