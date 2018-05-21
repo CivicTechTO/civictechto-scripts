@@ -1,2 +1,4 @@
-requests
+py-trello
+pygithub
 python-dotenv
+requests
