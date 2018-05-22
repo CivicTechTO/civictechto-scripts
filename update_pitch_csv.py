@@ -17,6 +17,10 @@ load_dotenv(dotenv_path=filename)
 
 LOCAL_TZ = pytz.timezone('Canada/Eastern')
 
+def str2bool(v):
+  return v.lower() in ("yes", "true", "t", "1")
+
+DEBUG = str2bool(os.getenv('DEBUG'))
 TRELLO_APP_KEY = os.getenv('TRELLO_APP_KEY')
 TRELLO_SECRET = os.getenv('TRELLO_SECRET')
 GITHUB_TOKEN = os.getenv('GITHUB_ACCESS_TOKEN')
@@ -89,8 +93,10 @@ for card in cards:
             }
     writer.writerow(data)
 
-update_github = False
-if update_github:
+if DEBUG:
+    with open('projects.csv', 'w') as f:
+        f.write(csvfile.getvalue())
+else:
     g = Github(GITHUB_TOKEN)
     path = 'data/civictechto-breakout-groups.csv'
 
@@ -101,6 +107,3 @@ if update_github:
     # See: https://github.com/PyGithub/PyGithub/issues/786
     path = '/' + path
     g.get_user('civictechto').get_repo('dataset-civictechto-breakout-groups').update_file(path, message, content, sha)
-else:
-    with open('projects.csv', 'w') as f:
-        f.write(csvfile.getvalue())
