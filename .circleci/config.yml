@@ -69,19 +69,29 @@ jobs:
           name: run script
           command: |
             . venv/bin/activate
-            #python3 save_pitch_data.py
+            python3 update_pitch_csv.py
 
 workflows:
   version: 2
   pre_hacknight:
     jobs:
-      - backup_trello
-      - save_pitch_data
       - reset_pitches
     triggers:
       - schedule:
-          # Every Tues at 6pm ET
+          # Every Tues evening at 6pm ET
           cron: "0 22 * * 2"
+          filters:
+            branches:
+              only: master
+
+  post_hacknight:
+    jobs:
+      - backup_trello
+      - save_pitch_data
+    triggers:
+      - schedule:
+          # Every Wed morning at 4am ET
+          cron: "0 8 * * 3"
           filters:
             branches:
               only: master
