@@ -6,6 +6,7 @@ from github import Github
 from io import StringIO
 import json
 import os
+import pytz
 import re
 import requests
 from trello import TrelloClient
@@ -13,6 +14,8 @@ from trello import TrelloClient
 dirname = os.path.dirname(__file__)
 filename = os.path.join(dirname, '.env')
 load_dotenv(dotenv_path=filename)
+
+LOCAL_TZ = pytz.timezone('Canada/Eastern')
 
 TRELLO_APP_KEY = os.getenv('TRELLO_APP_KEY')
 TRELLO_SECRET = os.getenv('TRELLO_SECRET')
@@ -33,9 +36,17 @@ lists = board.get_lists('open')
 [pitch_list] = [l for l in lists if l.name == LIST_TONIGHT]
 cards = pitch_list.list_cards()
 
+def utc_to_local(utc_dt):
+    local_dt = utc_dt.replace(tzinfo=pytz.utc).astimezone(LOCAL_TZ)
+    return LOCAL_TZ.normalize(local_dt)
+
 def last_hacknight(date):
+    date = utc_to_local(date)
     DAYS_OF_WEEK = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
     offset = (date.weekday() - DAYS_OF_WEEK.index('Tue')) % 7
+    # If before 5pm, assume we're working on last week
+    if offset == 0 and date.time() < datetime.time(17, 0):
+        offset += 7
     last_hacknight = date - datetime.timedelta(days=offset)
     return last_hacknight
 
@@ -59,7 +70,7 @@ if trello_user_fieldname not in reader.fieldnames:
 writer.fieldnames = writer_fieldnames
 writer.writeheader()
 
-hacknight_date = last_hacknight(datetime.date.today())
+hacknight_date = last_hacknight(datetime.datetime.now(pytz.utc))
 
 for row in reader:
     # If entries for this date already exist, ignore them and rewrite.
@@ -72,7 +83,7 @@ for card in cards:
     assigned_members = [client.get_member(member_id) for member_id in card.member_ids]
     usernames = [member.username for member in assigned_members]
     data = {
-            'date':    hacknight_date,
+            'date':    hacknight_date.strftime('%Y-%m-%d'),
             'project': card.name,
             trello_user_fieldname:  ','.join(usernames),
             }
@@ -85,7 +96,7 @@ if update_github:
 
     existing_csv_file = g.get_user('civictechto').get_repo('dataset-civictechto-breakout-groups').get_file_contents(path)
     sha = existing_csv_file.sha
-    message = 'Updated data for {} hacknight.'.format(hacknight_date)
+    message = 'Updated data for {} hacknight.'.format(hacknight_date.strftime('%Y-%m-%d'))
     content = csvfile.getvalue().encode('utf-8')
     # See: https://github.com/PyGithub/PyGithub/issues/786
     path = '/' + path
