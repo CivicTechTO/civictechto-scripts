@@ -11,8 +11,8 @@ load_dotenv(dotenv_path=filename)
 
 TRELLO_APP_KEY = os.getenv('TRELLO_APP_KEY')
 TRELLO_SECRET = os.getenv('TRELLO_SECRET')
-LIST_TONIGHT = "Tonight's Pitches"
-LIST_ACTIVE = 'Active'
+LIST_TONIGHT = os.getenv('TRELLO_LIST_TONIGHT', "Tonight's Pitches")
+LIST_ACTIVE = os.getenv('TRELLO_LIST_RECENT', 'Active')
 CARD_IGNORE_LIST = os.getenv('TRELLO_CARD_IGNORE_LIST').split(',')
 
 board_url = 'https://trello.com/b/EVvNEGK5/hacknight-projects'
@@ -30,8 +30,13 @@ r = requests.get(url)
 
 board_lists = r.json()
 
-[pitch_list] = [l for l in board_lists if l['name'] == LIST_TONIGHT]
-[active_list] = [l for l in board_lists if l['name'] == LIST_ACTIVE]
+def select_list(lists, filter_string):
+    field = 'id' if re.match('^[0-9a-f]+$', filter_string) else 'name'
+    [board_list] = [l for l in lists if l[field] == filter_string]
+    return board_list
+
+pitch_list = select_list(board_lists, LIST_TONIGHT)
+active_list = select_list(board_lists, LIST_ACTIVE)
 
 data.update({'lid': pitch_list['id']})
 url = 'https://api.trello.com/1/lists/{lid}/cards?key={key}&token={token}'.format(**data)
