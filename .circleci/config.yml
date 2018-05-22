@@ -9,7 +9,7 @@ jobs:
     docker:
       - image: circleci/python:3.6.2
     environment:
-      - TRELLO_CARD_IGNORE_LIST: "Civic Tech 101"
+      - TRELLO_CARD_IGNORE_LIST: ""
     steps:
       - checkout
 
