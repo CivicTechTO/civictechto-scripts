@@ -65,13 +65,7 @@ with requests.Session() as s:
     reader = csv.DictReader(decoded_content.splitlines(), delimiter=',')
 
 csvfile = StringIO()
-writer = csv.DictWriter(csvfile, fieldnames=[])
-
-trello_user_fieldname = 'trello_members'
-writer_fieldnames = reader.fieldnames
-if trello_user_fieldname not in reader.fieldnames:
-    writer_fieldnames.append(trello_user_fieldname)
-writer.fieldnames = writer_fieldnames
+writer = csv.DictWriter(csvfile, fieldnames=reader.fieldnames)
 writer.writeheader()
 
 hacknight_date = last_hacknight(datetime.datetime.now(pytz.utc))
@@ -85,11 +79,10 @@ for row in reader:
 
 for card in cards:
     assigned_members = [client.get_member(member_id) for member_id in card.member_ids]
-    usernames = [member.username for member in assigned_members]
     data = {
             'date':    hacknight_date.strftime('%Y-%m-%d'),
             'project': card.name,
-            trello_user_fieldname:  ','.join(usernames),
+            'person':  assigned_members[0].username,
             }
     writer.writerow(data)
 
