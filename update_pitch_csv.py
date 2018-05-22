@@ -1,7 +1,9 @@
+import base64
 import csv
 import datetime
 from dotenv import load_dotenv
 from github import Github
+from io import StringIO
 import json
 import os
 import re
@@ -47,34 +49,47 @@ with requests.Session() as s:
     decoded_content = download.content.decode('utf-8')
     reader = csv.DictReader(decoded_content.splitlines(), delimiter=',')
 
-    with open('projects.csv', 'w') as csvfile:
-        trello_user_fieldname = 'trello_members'
-        new_fieldsnames = reader.fieldnames.insert(3, trello_user_fieldname)
-        writer = csv.DictWriter(csvfile, fieldnames=reader.fieldnames)
-        writer.writeheader()
+csvfile = StringIO()
+writer = csv.DictWriter(csvfile, fieldnames=[])
 
-        hacknight_date = last_hacknight(datetime.date.today())
+trello_user_fieldname = 'trello_members'
+writer_fieldnames = reader.fieldnames
+if trello_user_fieldname not in reader.fieldnames:
+    writer_fieldnames.append(trello_user_fieldname)
+writer.fieldnames = writer_fieldnames
+writer.writeheader()
 
-        for row in reader:
-            # If entries for this date already exist, ignore them and rewrite.
-            if row['date'] == hacknight_date.strftime('%Y-%m-%d'):
-                continue
-            writer.writerow(row)
+hacknight_date = last_hacknight(datetime.date.today())
+
+for row in reader:
+    # If entries for this date already exist, ignore them and rewrite.
+    if row['date'] == hacknight_date.strftime('%Y-%m-%d'):
+        continue
+    writer.writerow(row)
 
 
-        for card in cards:
-            assigned_members = [client.get_member(member_id) for member_id in card.member_ids]
-            usernames = [member.username for member in assigned_members]
-            data = {
-                    'date':    hacknight_date,
-                    'project': card.name,
-                    trello_user_fieldname:  ','.join(usernames),
-                    }
-            writer.writerow(data)
+for card in cards:
+    assigned_members = [client.get_member(member_id) for member_id in card.member_ids]
+    usernames = [member.username for member in assigned_members]
+    data = {
+            'date':    hacknight_date,
+            'project': card.name,
+            trello_user_fieldname:  ','.join(usernames),
+            }
+    writer.writerow(data)
 
-g = Github(GITHUB_TOKEN)
-path = 'data/civictechto-breakout-groups.csv'
-message = 'Updated data for {} hacknight.'.format(hacknight_date)
-content = ''
-sha = ''
-g.get_user('civictechto').get_repo('dataset-civictechto-breakout-groups').update_file(path, message, content, sha)
+update_github = False
+if update_github:
+    g = Github(GITHUB_TOKEN)
+    path = 'data/civictechto-breakout-groups.csv'
+
+    existing_csv_file = g.get_user('civictechto').get_repo('dataset-civictechto-breakout-groups').get_file_contents(path)
+    sha = existing_csv_file.sha
+    message = 'Updated data for {} hacknight.'.format(hacknight_date)
+    content = csvfile.getvalue().encode('utf-8')
+    # See: https://github.com/PyGithub/PyGithub/issues/786
+    path = '/' + path
+    g.get_user('civictechto').get_repo('dataset-civictechto-breakout-groups').update_file(path, message, content, sha)
+else:
+    with open('projects.csv', 'w') as f:
+        f.write(csvfile.getvalue())
