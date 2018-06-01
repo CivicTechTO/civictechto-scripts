@@ -20,7 +20,7 @@ LOCAL_TZ = pytz.timezone('Canada/Eastern')
 def str2bool(v):
   return v.lower() in ("yes", "true", "t", "1")
 
-DEBUG = str2bool(os.getenv('DEBUG'))
+DEBUG = str2bool(os.getenv('DEBUG', ''))
 TRELLO_APP_KEY = os.getenv('TRELLO_APP_KEY')
 TRELLO_SECRET = os.getenv('TRELLO_SECRET')
 GITHUB_TOKEN = os.getenv('GITHUB_ACCESS_TOKEN')
