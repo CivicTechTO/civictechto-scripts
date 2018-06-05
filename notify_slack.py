@@ -35,10 +35,13 @@ lists = board.get_lists('open')
 cards = pitch_list.list_cards()
 
 # Assume Trello not used this week
-if len(cards) < 3: sys.exit()
+if len(cards) < 3:
+    sys.exit()
 
 template = """
-:ctto: :ctto: :ctto: Yay! Thanks so much to everyone who made *this week's pitches*:
+:ctto: :ctto: :ctto: :ctto: :ctto:
+
+Yay! Thanks to everyone who made *this week's pitches*:
 
 {{#projects}}
 :small_blue_diamond: {{ name }}
@@ -64,5 +67,6 @@ else:
             username='civictechto-scripts',
             icon_emoji=':robot_face:',
             thread_ts=msg['ts'],
-            text='test'
+            unfurl_links=False,
+            text='Curious how this message gets posted? https://github.com/civictechto/civictechto-scripts#readme'
             )
