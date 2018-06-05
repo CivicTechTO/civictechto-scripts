@@ -67,5 +67,5 @@ This drops a message in Slack announcing who pitched this week.
    [circleci]: https://circleci.com/docs/2.0/about-circleci/
    [circleci-cron]: https://support.circleci.com/hc/en-us/articles/115015481128-Scheduling-jobs-cron-for-builds-
    [circleci-proj]: https://circleci.com/gh/civictechto/civictechto-scripts
-   [circleci-config]: .circleci/config.yml#L93-L117
+   [circleci-config]:.circleci/config.yml#L126
    [breakout-dataset]: https://github.com/CivicTechTO/dataset-civictechto-breakout-groups/blob/master/data/civictechto-breakout-groups.csv
