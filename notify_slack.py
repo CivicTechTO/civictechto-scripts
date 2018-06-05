@@ -48,7 +48,7 @@ Yay! Thanks to everyone who made *this week's pitches*:
 {{/projects}}
 """
 
-if DEBUG:
+if DEBUG or not SLACK_API_TOKEN:
     print(pystache.render(template.strip(), {'projects': cards}))
 else:
     sc = SlackClient(SLACK_API_TOKEN)
