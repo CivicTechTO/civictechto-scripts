@@ -14,6 +14,8 @@ tasks. Many of them run automatically each week.
   tools.
 - [**CircleCI.**][circleci] A script-running service that [runs scheduled
   tasks][circleci-cron] for us in the cloud.
+- [**Trello.**][trello] A flexible organizing and project management
+  tool that we [use to track breakout groups][trello-board].
 
 ## About these Automated Scripts
 
@@ -46,8 +48,8 @@ environment. Then just follow these steps.
 
 ### `clean_pitch_list.py`
 
-This moves all Trello cards from the pitch list to the active column.
-The idea is to schedule it to run prior to each hacknight.
+On the [Trello board][trello-board], this moves all cards from the pitch
+list to the active column. This run prior to each hacknight.
 
 ```
 python clean_pitch_list.py
@@ -56,11 +58,13 @@ python clean_pitch_list.py
 ### `update_pitch_csv.py`
 
 This updates the [historical dataset of breakout
-groups][breakout-dataset] who pitched each week.
+groups][breakout-dataset] who pitched each week, based on the [Trello
+board][trello-board].
 
 ### `notify_slack.py`
 
-This drops a message in Slack announcing who pitched this week.
+This takes data from the [Trello board][trello-board], and drops a
+message in Slack announcing who pitched this week.
 
 <!-- Links -->
    [click]: http://click.pocoo.org/5/
@@ -69,3 +73,5 @@ This drops a message in Slack announcing who pitched this week.
    [circleci-proj]: https://circleci.com/gh/civictechto/civictechto-scripts
    [circleci-config]:.circleci/config.yml#L126
    [breakout-dataset]: https://github.com/CivicTechTO/dataset-civictechto-breakout-groups/blob/master/data/civictechto-breakout-groups.csv
+   [trello]: https://trello.com/about
+   [trello-board]: https://trello.com/b/EVvNEGK5/hacknight-projects
