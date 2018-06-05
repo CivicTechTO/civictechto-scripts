@@ -1,4 +1,6 @@
 py-trello
 pygithub
+pystache
 python-dotenv
 requests
+slackclient
