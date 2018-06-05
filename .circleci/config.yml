@@ -16,6 +16,15 @@ jobs:
       - TRELLO_LIST_TONIGHT: 58e158f29b0ae02ab71b9a87
         # For list: "Recent Pitches (Past Month)"
       - TRELLO_LIST_RECENT: 58e158eba6846a4fb012404c
+        # For channel: #general
+      - SLACK_ANNOUNCE_CHANNEL: C04TJ34KG
+        # For the following sensitive envvars, check the CircleCI UI.
+        #   - GITHUB_ACCESS_TOKEN
+        #   - SLACK_API_TOKEN
+        #   - TRELLO_APP_KEY
+        #   - TRELLO_SECRET
+        #
+        # See: https://circleci.com/gh/CivicTechTO/civictechto-scripts/edit#env-vars
     steps:
       - checkout
 

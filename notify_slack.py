@@ -41,7 +41,7 @@ if len(cards) < 3:
 template = """
 :ctto: :ctto: :ctto: :ctto: :ctto:
 
-Yay! Thanks to everyone who made *this week's pitches*:
+Yay! Thanks to everyone who gave *this week's pitches*:
 
 {{#projects}}
 :small_blue_diamond: {{ name }}
