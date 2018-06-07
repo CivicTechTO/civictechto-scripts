@@ -83,7 +83,7 @@ Runs pre-hacknight.
    [click]: http://click.pocoo.org/5/
    [circleci]: https://circleci.com/docs/2.0/about-circleci/
    [circleci-cron]: https://support.circleci.com/hc/en-us/articles/115015481128-Scheduling-jobs-cron-for-builds-
-   [circleci-proj]: https://circleci.com/gh/civictechto/civictechto-scripts
+   [circleci-proj]: https://circleci.com/gh/CivicTechTO/civictechto-scripts
    [circleci-config]:.circleci/config.yml#L126
    [breakout-dataset]: https://github.com/CivicTechTO/dataset-civictechto-breakout-groups/blob/master/data/civictechto-breakout-groups.csv
    [trello]: https://trello.com/about
