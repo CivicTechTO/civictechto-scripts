@@ -36,16 +36,16 @@ this_month_roles = worksheet.col_values(this_month_col)
 roles_col = worksheet.col_values(1)
 data = dict(zip(roles_col, this_month_roles))
 for k,v in list(data.items()):
-    if not (k and v):
+    if not k and not v:
         del data[k]
-    if 'wrangler' in k.lower():
-        del data[k]
-    if 'booking' in k.lower():
+    if k.lower() in ['leads wrangler', 'transparency wrangler', 'venue booking', 'speaker booking']:
         del data[k]
     if k.lower() == 'role':
         del data[k]
     if k.lower() == 'venue':
         del data[k]
+    if not v:
+        data[k] = 'HAALP WANTED :woman-raising-hand: <-- You?'
 
 mustache_data = [{"role": k, "organizer": v} for k,v in data.items()]
 
