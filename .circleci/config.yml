@@ -17,7 +17,9 @@ jobs:
         # For list: "Recent Pitches (Past Month)"
       - TRELLO_LIST_RECENT: 58e158eba6846a4fb012404c
         # For channel: #general
-      - SLACK_ANNOUNCE_CHANNEL: C04TJ34KG
+      - SLACK_ANNOUNCE_CHANNEL_PUB: C04TJ34KG
+        # For channel: #organizing-open
+      - SLACK_ANNOUNCE_CHANNEL_ORG: C4SHX39B2
         # For the following sensitive envvars, check the CircleCI UI.
         #   - GITHUB_ACCESS_TOKEN
         #   - SLACK_API_TOKEN
@@ -27,6 +29,11 @@ jobs:
         # See: https://circleci.com/gh/CivicTechTO/civictechto-scripts/edit#env-vars
     steps:
       - checkout
+
+      - run: &decrypt_files
+          name: decrypt files
+          command: |
+            openssl aes-256-cbc -k "$TRELLO_SECRET" -in service-key.json.enc -out service-key.json -d
 
       - restore_cache: &restore_cache
           keys:
@@ -51,6 +58,7 @@ jobs:
     <<: *default_job
     steps:
       - checkout
+      - run: {<<: *decrypt_files}
       - restore_cache: {<<: *restore_cache}
       - run: {<<: *install_dependencies}
       - save_cache: {<<: *save_cache}
@@ -86,7 +94,7 @@ jobs:
             . venv/bin/activate
             python3 update_pitch_csv.py
 
-  notify_slack:
+  notify_slack_pitches:
     <<: *default_job
     steps:
       - checkout
@@ -97,12 +105,26 @@ jobs:
           name: run script
           command: |
             . venv/bin/activate
-            python3 notify_slack.py
+            python3 notify_slack_pitches.py
+
+  notify_slack_roles:
+    <<: *default_job
+    steps:
+      - checkout
+      - restore_cache: {<<: *restore_cache}
+      - run: {<<: *install_dependencies}
+      - save_cache: {<<: *save_cache}
+      - run:
+          name: run script
+          command: |
+            . venv/bin/activate
+            python3 notify_slack_roles.py
 
 workflows:
   version: 2
   pre_hacknight:
     jobs:
+      - notify_slack_roles
       - reset_pitches
     triggers:
       - schedule:
@@ -114,7 +136,7 @@ workflows:
 
   post_hacknight:
     jobs:
-      - notify_slack
+      - notify_slack_pitches
       - backup_trello
       - save_pitch_data
     triggers:

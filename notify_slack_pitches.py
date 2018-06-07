@@ -15,7 +15,7 @@ def str2bool(v):
 
 DEBUG = str2bool(os.getenv('DEBUG', ''))
 SLACK_API_TOKEN = os.getenv('SLACK_API_TOKEN')
-SLACK_ANNOUNCE_CHANNEL = os.getenv('SLACK_ANNOUNCE_CHANNEL')
+SLACK_ANNOUNCE_CHANNEL = os.getenv('SLACK_ANNOUNCE_CHANNEL_PUB')
 TRELLO_APP_KEY = os.getenv('TRELLO_APP_KEY')
 TRELLO_SECRET = os.getenv('TRELLO_SECRET')
 LIST_TONIGHT = "Tonight's Pitches"

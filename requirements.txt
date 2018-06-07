@@ -4,3 +4,5 @@ pystache
 python-dotenv
 requests
 slackclient
+gspread
+oauth2client

@@ -51,6 +51,8 @@ environment. Then just follow these steps.
 On the [Trello board][trello-board], this moves all cards from the pitch
 list to the active column. This run prior to each hacknight.
 
+Runs pre-hacknight.
+
 ```
 python clean_pitch_list.py
 ```
@@ -61,10 +63,21 @@ This updates the [historical dataset of breakout
 groups][breakout-dataset] who pitched each week, based on the [Trello
 board][trello-board].
 
-### `notify_slack.py`
+Runs post-hacknight.
+
+### `notify_slack_pitches.py`
 
 This takes data from the [Trello board][trello-board], and drops a
-message in Slack announcing who pitched this week.
+message in Slack's `#general` channel, announcing who pitched this week.
+
+Runs post-hacknight.
+
+### `notify_slack_roles.py`
+
+This takes data from the [Hacknight Roles spreadsheet][hacknight-roles-sheet], and drops a
+message in Slack's `#organizing-open` channel, announcing who pitched this week.
+
+Runs pre-hacknight.
 
 <!-- Links -->
    [click]: http://click.pocoo.org/5/
@@ -75,3 +88,4 @@ message in Slack announcing who pitched this week.
    [breakout-dataset]: https://github.com/CivicTechTO/dataset-civictechto-breakout-groups/blob/master/data/civictechto-breakout-groups.csv
    [trello]: https://trello.com/about
    [trello-board]: https://trello.com/b/EVvNEGK5/hacknight-projects
+   [hacknight-roles-sheet]: https://docs.google.com/spreadsheets/d/1v9xUqaSqgvDDlTpFqWtBXDPLKw6HsaFU5DfSO0d_9_0/edit
