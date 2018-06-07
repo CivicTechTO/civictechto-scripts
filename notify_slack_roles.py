@@ -44,7 +44,7 @@ for k,v in list(data.items()):
         del data[k]
     if k.lower() == 'venue':
         del data[k]
-    if not v:
+    if k and not v:
         data[k] = 'HAALP WANTED :woman-raising-hand: <-- You?'
 
 mustache_data = [{"role": k, "organizer": v} for k,v in data.items()]
