@@ -70,6 +70,7 @@ else:
             username='civictechto-scripts',
             icon_emoji=':robot_face:',
             link_names=1,
+            unfurl_links=False,
             text=pystache.render(template.strip(), {'roles': mustache_data})
             )
     sc.api_call(
@@ -79,6 +80,18 @@ else:
             username='civictechto-scripts',
             icon_emoji=':robot_face:',
             thread_ts=msg['ts'],
+            link_names=1,
+            unfurl_links=False,
+            text='Hacknight Roles spreadsheet: https://docs.google.com/spreadsheets/d/1v9xUqaSqgvDDlTpFqWtBXDPLKw6HsaFU5DfSO0d_9_0/edit#gid=351752992'
+            )
+    sc.api_call(
+            'chat.postMessage',
+            channel=SLACK_ANNOUNCE_CHANNEL,
+            as_user=False,
+            username='civictechto-scripts',
+            icon_emoji=':robot_face:',
+            thread_ts=msg['ts'],
+            link_names=1,
             unfurl_links=False,
             text='Curious how this message gets posted? https://github.com/civictechto/civictechto-scripts#readme'
             )
