@@ -19,7 +19,7 @@ tasks. Many of them run automatically each week.
 
 ## About these Automated Scripts
 
-Some of these scripts are automatically run before and after hacknight
+Some of these scripts are automatically run before and after hacknight,
 using CircleCI's workflow feature. The schedule is set in the
 [`.circleci/config.yml`][circleci-config] file within this repo.
 
