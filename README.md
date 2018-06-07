@@ -49,7 +49,7 @@ environment. Then just follow these steps.
 ### `clean_pitch_list.py`
 
 On the [Trello board][trello-board], this moves all cards from the pitch
-list to the active column. This run prior to each hacknight.
+list to the active column.
 
 Runs pre-hacknight.
 
@@ -72,12 +72,16 @@ message in Slack's `#general` channel, announcing who pitched this week.
 
 Runs post-hacknight.
 
+![Screenshot of Slack post](https://i.imgur.com/M1y4Yi6.png)
+
 ### `notify_slack_roles.py`
 
 This takes data from the [Hacknight Roles spreadsheet][hacknight-roles-sheet], and drops a
 message in Slack's `#organizing-open` channel, announcing who pitched this week. If role is unclaimed, solicits help.
 
-Runs pre-hacknight.
+Runs day before hacknight.
+
+![Screenshot of Slack post](https://i.imgur.com/PLUi7Lh.png)
 
 ## Related Resource
 
