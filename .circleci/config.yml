@@ -5,9 +5,19 @@
 
 workflows:
   version: 2
-  pre_hacknight:
+  day_before:
     jobs:
       - notify_slack_roles
+    triggers:
+      - schedule:
+          # Every Mon evening at 6pm ET
+          cron: "0 22 * * 1"
+          filters:
+            branches:
+              only: master
+
+  pre_hacknight:
+    jobs:
       - reset_pitches
     triggers:
       - schedule:
