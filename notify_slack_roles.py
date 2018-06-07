@@ -52,7 +52,7 @@ mustache_data = [{"role": k, "organizer": v} for k,v in data.items()]
 template = """
 :ctto: :ctto: :ctto: :ctto: :ctto:
 
-Who's signed up for this month's hacknight roles? These heros!
+Who's signed up for this month's hacknight roles? These heroes!
 
 {{#roles}}
 :small_blue_diamond: *{{{ role }}}:* {{{ organizer }}}
@@ -69,6 +69,7 @@ else:
             as_user=False,
             username='civictechto-scripts',
             icon_emoji=':robot_face:',
+            link_names=1,
             text=pystache.render(template.strip(), {'roles': mustache_data})
             )
     sc.api_call(
