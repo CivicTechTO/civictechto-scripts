@@ -79,6 +79,10 @@ message in Slack's `#organizing-open` channel, announcing who pitched this week.
 
 Runs pre-hacknight.
 
+## Related Resource
+
+- Google Drawing: [Process Flow Diagram: Projects/Breakouts/Ideas](https://docs.google.com/drawings/d/1h9hY9eyfZzdVbIu-4pihQ6RBgrjj8PbUsHE4oHbGYUY/edit)
+
 <!-- Links -->
    [click]: http://click.pocoo.org/5/
    [circleci]: https://circleci.com/docs/2.0/about-circleci/
