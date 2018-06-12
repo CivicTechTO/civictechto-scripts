@@ -110,6 +110,7 @@ jobs:
     <<: *default_job
     steps:
       - checkout
+      - run: {<<: *decrypt_files}
       - restore_cache: {<<: *restore_cache}
       - run: {<<: *install_dependencies}
       - save_cache: {<<: *save_cache}
@@ -123,6 +124,7 @@ jobs:
     <<: *default_job
     steps:
       - checkout
+      - run: {<<: *decrypt_files}
       - restore_cache: {<<: *restore_cache}
       - run: {<<: *install_dependencies}
       - save_cache: {<<: *save_cache}
@@ -136,6 +138,7 @@ jobs:
     <<: *default_job
     steps:
       - checkout
+      - run: {<<: *decrypt_files}
       - restore_cache: {<<: *restore_cache}
       - run: {<<: *install_dependencies}
       - save_cache: {<<: *save_cache}
@@ -149,6 +152,7 @@ jobs:
     <<: *default_job
     steps:
       - checkout
+      - run: {<<: *decrypt_files}
       - restore_cache: {<<: *restore_cache}
       - run: {<<: *install_dependencies}
       - save_cache: {<<: *save_cache}
