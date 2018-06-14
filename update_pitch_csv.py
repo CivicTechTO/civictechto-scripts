@@ -82,8 +82,12 @@ for card in cards:
     data = {
             'date':    hacknight_date.strftime('%Y-%m-%d'),
             'project': card.name,
-            'person':  assigned_members[0].username,
+            'person':  '',
             }
+
+    if assigned_members:
+        data.update({'person': assigned_members[0].username})
+
     writer.writerow(data)
 
 if DEBUG:
