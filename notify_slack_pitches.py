@@ -38,7 +38,7 @@ def process_card(card):
     data = {
             'name': card.name,
             'chat_room': '',
-            'leads': [],
+            'pitcher': '',
             }
 
     attachments = card.get_attachments()
@@ -47,14 +47,26 @@ def process_card(card):
     if chat_attachments:
         data['chat_room'] = chat_re.match(chat_attachments.pop(0).name).group(1)
 
-    return data
+    comments = card.get_comments()
+    comments.reverse()
+    pitcher_re = re.compile('pitchers?:? ?(.+)', flags=re.IGNORECASE)
+    # Get most recent pitcher
+    # TODO: Check whether comment made in past week.
+    for c in comments:
+        match = pitcher_re.match(c['data']['text'])
+        if match:
+            pitcher_raw = match.group(1)
+            data['pitcher'] = pitcher_raw
+            break
 
-for i, card in enumerate(cards):
-    cards[i] = process_card(card)
+    return data
 
 # Assume Trello not used this week
 if len(cards) < 3:
     sys.exit()
+
+for i, card in enumerate(cards):
+    cards[i] = process_card(card)
 
 template = """
 :ctto: :ctto: :ctto: :ctto: :ctto:
@@ -62,7 +74,7 @@ template = """
 Yay! Thanks to everyone who gave *this week's pitches*:
 
 {{#projects}}
-:small_blue_diamond: {{{ name }}} {{ chat_room }}
+:small_blue_diamond: {{{ name }}} {{ #chat_room }}| {{ chat_room }}{{ /chat_room }} {{ #pitcher }}| :speaking_head_in_silhouette: {{ pitcher }}{{ /pitcher }}
 {{/projects}}
 """
 
