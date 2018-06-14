@@ -34,6 +34,24 @@ lists = board.get_lists('open')
 [pitch_list] = [l for l in lists if l.name == LIST_TONIGHT]
 cards = pitch_list.list_cards()
 
+def process_card(card):
+    data = {
+            'name': card.name,
+            'chat_room': '',
+            'leads': [],
+            }
+
+    attachments = card.get_attachments()
+    chat_re = re.compile('^(?:slack|chat): (\S+)$', flags=re.IGNORECASE)
+    chat_attachments = [a for a in attachments if chat_re.match(a.name)]
+    if chat_attachments:
+        data['chat_room'] = chat_re.match(chat_attachments.pop(0).name).group(1)
+
+    return data
+
+for i, card in enumerate(cards):
+    cards[i] = process_card(card)
+
 # Assume Trello not used this week
 if len(cards) < 3:
     sys.exit()
@@ -44,7 +62,7 @@ template = """
 Yay! Thanks to everyone who gave *this week's pitches*:
 
 {{#projects}}
-:small_blue_diamond: {{ name }}
+:small_blue_diamond: {{{ name }}} {{ chat_room }}
 {{/projects}}
 """
 
@@ -58,6 +76,7 @@ else:
             as_user=False,
             username='civictechto-scripts',
             icon_emoji=':robot_face:',
+            parse='full',
             text=pystache.render(template.strip(), {'projects': cards})
             )
     sc.api_call(
