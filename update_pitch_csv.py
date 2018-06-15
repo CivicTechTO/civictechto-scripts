@@ -83,6 +83,7 @@ for card in cards:
             'date':    hacknight_date.strftime('%Y-%m-%d'),
             'project': card.name,
             'person':  '',
+            'trello_card_id': card.id,
             }
 
     if assigned_members:
