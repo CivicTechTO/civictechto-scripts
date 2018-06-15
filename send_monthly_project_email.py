@@ -22,10 +22,13 @@
 #
 # 1. Notify slack of the scheduled campaign with archive_url to preview.
 
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from jinja2 import Template
 from mailchimp3 import MailChimp
 import os
+import pytz
+from slackclient import SlackClient
 
 dirname = os.path.dirname(__file__)
 filename = os.path.join(dirname, '.env')
@@ -40,6 +43,8 @@ MAILCHIMP_API_USER = os.getenv('MAILCHIMP_API_USER')
 MAILCHIMP_LIST_ID = os.getenv('MAILCHIMP_LIST_ID')
 MAILCHIMP_TEMPLATE_ID = int(os.getenv('MAILCHIMP_TEMPLATE_ID'))
 MAILCHIMP_SECTION_NAME = os.getenv('MAILCHIMP_SECTION_NAME')
+SLACK_API_TOKEN = os.getenv('SLACK_API_TOKEN')
+SLACK_ANNOUNCE_CHANNEL = os.getenv('SLACK_ANNOUNCE_CHANNEL_ORG')
 
 def get_project_data():
     projects = [
@@ -140,9 +145,42 @@ content_data = {
             }
         }
 mc_client.campaigns.content.update(campaign_id=campaign['id'], data=content_data)
-exit(0)
 
-send_time = calculate_send_time() # TODO
-mc_client.campaigns.actions.schedule(campaign_id=campaign['id'], data={'schedule_time': send_time})
+def calculate_send_time():
+    d = timedelta(days=1)
+    send_time = datetime.utcnow().replace(tzinfo=pytz.utc) + d
+    return send_time
 
-slack.notify('A monthly project update has been scheduled for {}: {}'.format(date, url))
+send_time = calculate_send_time()
+rounded_send_time = send_time.replace(minute=15*(send_time.minute // 15))
+mc_client.campaigns.actions.schedule(campaign_id=campaign['id'], data={'schedule_time': rounded_send_time})
+
+preview_url = campaign['archive_url']
+# TODO: Convert this time from UTC to ET
+announcement = 'A monthly project update has been scheduled for {}: {}'.format(rounded_send_time.strftime('%a, %b %-m @ %-I:%M%p'), preview_url)
+if DEBUG:
+    print(announcement)
+else:
+    sc = SlackClient(SLACK_API_TOKEN)
+    msg = sc.api_call(
+            'chat.postMessage',
+            channel=SLACK_ANNOUNCE_CHANNEL,
+            as_user=False,
+            username='civictechto-scripts',
+            icon_emoji=':robot_face:',
+            link_names=1,
+            unfurl_links=False,
+            text=announcement
+            )
+    sc.api_call(
+            'chat.postMessage',
+            channel=SLACK_ANNOUNCE_CHANNEL,
+            as_user=False,
+            username='civictechto-scripts',
+            icon_emoji=':robot_face:',
+            thread_ts=msg['ts'],
+            link_names=1,
+            unfurl_links=False,
+            text='Curious how this message gets posted? https://github.com/civictechto/civictechto-scripts#readme'
+            )
+
