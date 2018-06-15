@@ -83,6 +83,13 @@ Runs day before hacknight.
 
 ![Screenshot of Slack post](https://i.imgur.com/PLUi7Lh.png)
 
+### `send_monthly_project_email.py`
+
+This take data from the [historical dataset of breakout
+groups][breakout-dataset] (generated via [`update_pitch_csv.py`](#update_pitch_csvpy)), and sends out a MailChimp update once/month, using [this MailChimp template][mailchimp-template].
+
+This is a work in progress, and doesn't yet work or run regularly.
+
 ## Related Resource
 
 - Google Drawing: [Process Flow Diagram: Projects/Breakouts/Ideas](https://docs.google.com/drawings/d/1h9hY9eyfZzdVbIu-4pihQ6RBgrjj8PbUsHE4oHbGYUY/edit)
@@ -97,3 +104,4 @@ Runs day before hacknight.
    [trello]: https://trello.com/about
    [trello-board]: https://trello.com/b/EVvNEGK5/hacknight-projects
    [hacknight-roles-sheet]: https://docs.google.com/spreadsheets/d/1v9xUqaSqgvDDlTpFqWtBXDPLKw6HsaFU5DfSO0d_9_0/edit
+   [mailchimp-template]: https://us11.admin.mailchimp.com/templates/design?tid=364745

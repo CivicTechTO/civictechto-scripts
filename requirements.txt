@@ -1,8 +1,10 @@
+gspread
+jinja2
+mailchimp3
+oauth2client
 py-trello
 pygithub
 pystache
 python-dotenv
 requests
 slackclient
-gspread
-oauth2client
