@@ -155,9 +155,11 @@ send_time = calculate_send_time()
 rounded_send_time = send_time.replace(minute=15*(send_time.minute // 15))
 mc_client.campaigns.actions.schedule(campaign_id=campaign['id'], data={'schedule_time': rounded_send_time})
 
+list_data = mc_client.lists.get(MAILCHIMP_LIST_ID)
+subscriber_count = list_data['stats']['member_count']
 preview_url = campaign['archive_url']
 # TODO: Convert this time from UTC to ET
-announcement = 'A monthly project update has been scheduled for {}: {}'.format(rounded_send_time.strftime('%a, %b %-m @ %-I:%M%p'), preview_url)
+announcement = 'A monthly project update ({} subscribers) has been scheduled for {}: {}'.format(subscriber_count, rounded_send_time.strftime('%a, %b %-m @ %-I:%M%p'), preview_url)
 if DEBUG:
     print(announcement)
 else:
