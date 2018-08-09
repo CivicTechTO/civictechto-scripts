@@ -23,6 +23,11 @@ Some of these scripts are automatically run before and after hacknight,
 using CircleCI's workflow feature. The schedule is set in the
 [`.circleci/config.yml`][circleci-config] file within this repo.
 
+Here's a diagram showing how project pitch information flows into, through and out of the Trello board, in part via scripts:
+
+<sub>(Click to see expanded view.)</sub><br/>
+[![Process Flow Diagram](https://docs.google.com/drawings/d/e/2PACX-1vSNrFFElzvRuHQM44PU--wO3kyDwhR54gnj6mHoXbJ_1CkRzgB2murOhFNM9DxIcnYSYGSk5naJH2p5/pub?w=600)](https://docs.google.com/drawings/d/1h9hY9eyfZzdVbIu-4pihQ6RBgrjj8PbUsHE4oHbGYUY/edit)
+
 ## :computer: Local Development
 
 ### Setup
@@ -89,10 +94,6 @@ This take data from the [historical dataset of breakout
 groups][breakout-dataset] (generated via [`update_pitch_csv.py`](#update_pitch_csvpy)), and sends out a MailChimp update once/month, using [this MailChimp template][mailchimp-template].
 
 This is a work in progress, and doesn't yet work or run regularly.
-
-## Related Resource
-
-- Google Drawing: [Process Flow Diagram: Projects/Breakouts/Ideas](https://docs.google.com/drawings/d/1h9hY9eyfZzdVbIu-4pihQ6RBgrjj8PbUsHE4oHbGYUY/edit)
 
 <!-- Links -->
    [click]: http://click.pocoo.org/5/
