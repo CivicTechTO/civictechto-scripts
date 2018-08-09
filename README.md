@@ -83,7 +83,7 @@ Runs post-hacknight.
 ### `notify_slack_roles.py`
 
 This takes data from the [Hacknight Roles spreadsheet][hacknight-roles-sheet], and drops a
-message in Slack's `#organizing-open` channel, announcing who pitched this week. If role is unclaimed, solicits help.
+message in Slack's `#organizing-open` channel, announcing who signed up for each hacknight-organizing role this month. If a role is unclaimed, it solicits help.
 
 Runs day before hacknight.
 
