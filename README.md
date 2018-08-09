@@ -53,8 +53,9 @@ environment. Then just follow these steps.
 
 ### `clean_pitch_list.py`
 
-On the [Trello board][trello-board], this moves all cards from the pitch
-list to the active column.
+On the [Trello board][trello-board], this moves all cards from one list to another.
+
+> eg. `Tonight's Pitches` :arrow_right: `Recently Pitched`
 
 Runs pre-hacknight.
 
