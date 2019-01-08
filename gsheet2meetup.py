@@ -1,6 +1,7 @@
 import click
 import csv
 import datetime
+import meetup.api
 import re
 import requests
 
@@ -14,9 +15,20 @@ CONTEXT_SETTINGS = dict(help_option_names=['--help', '-h'])
 @click.option('--meetup-api-key',
               metavar='<string>')
 @click.option('--meetup-group-slug',
+              default='Civic-Tech-Toronto',
               metavar='<string>')
-def gsheet2meetup(meetup_key, gsheet_url, meetup_group_slug):
+def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug):
     """Create/update events of a Meetup.com group from a Google Docs spreadsheet."""
+
+    mclient = meetup.api.Client(meetup_api_key)
+    response = mclient.GetEvents({
+        'group_urlname': meetup_group_slug,
+        'status': 'upcoming',
+        # re: simple_html_description
+        # See: https://www.meetup.com/meetup_api/docs/:urlname/events/#createparams
+        'fields': 'venue,simple_html_description',
+    })
+    meetup_events = response.results
 
     gsheet_url_re = re.compile('https://docs.google.com/spreadsheets/d/(\w+)/(?:edit|view)(?:#gid=([0-9]+))?')
     matches = gsheet_url_re.match(gsheet_url)
@@ -45,13 +57,24 @@ def gsheet2meetup(meetup_key, gsheet_url, meetup_group_slug):
             # Set date of event start.
             EVENT_START_TIME = '18:30'
             h, m = EVENT_START_TIME.split(':')
-            date = datetime.datetime.strptime(row['date'], '%Y-%m-%d')
-            date = date + datetime.timedelta(hours=int(h), minutes=int(m))
+            gevent_start = datetime.datetime.strptime(row['date'], '%Y-%m-%d')
+            gevent_start = gevent_start + datetime.timedelta(hours=int(h), minutes=int(m))
             # Ignore non-sync'd or past events
             is_past = lambda d: d < datetime.datetime.now()
-            if not row['do_sync'] or is_past(date):
+            if not row['do_sync'] or is_past(gevent_start):
                 continue
-            print(row)
+            get_mevent_start = lambda ev: datetime.datetime.fromtimestamp(ev.get('time')/1000)
+            [this_event] = [ev for ev in meetup_events if get_mevent_start(ev).date() == gevent_start.date()]
+            if this_event:
+                print(this_event)
+                print(row)
+                event_data = {
+                    'urlname': meetup_group_slug,
+                    'id': this_event['id'],
+                    'name': row['title_full'],
+                }
+                response = mclient.EditEvent(**event_data)
+                print(response)
 
     # parse gsheet event data
 

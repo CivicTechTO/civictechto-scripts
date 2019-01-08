@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "1e202464e9e8e871ce90238496d76435ef6258d10e4f2a5ead6d5118afe68572"
+            "sha256": "a10b2a3b162b5af53e0b6fcca8e9035702cf0c88e5fc82c1a50630bd2c9bc472"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -115,6 +115,11 @@
             ],
             "version": "==1.1.0"
         },
+        "meetup-api": {
+            "editable": true,
+            "git": "https://github.com/patcon/meetup-api.git",
+            "ref": "8b6b6b6304b6273c2fa41f7a1068632aac1dee9f"
+        },
         "oauth2client": {
             "hashes": [
                 "sha256:b8a81cc5d60e2d364f0b1b98f958dbd472887acaf1a5b05e21c28c31a2d6d3ac",
@@ -125,10 +130,10 @@
         },
         "oauthlib": {
             "hashes": [
-                "sha256:ac35665a61c1685c56336bda97d5eefa246f1202618a1d6f34fccb1bdd404162",
-                "sha256:d883b36b21a6ad813953803edfa563b1b579d79ca758fe950d1bc9e8b326025b"
+                "sha256:0a8b2e0daa7afb62bd1b0b387b7a3723fa9a35d1183694ca5a5c8e3d6df59913",
+                "sha256:8932fb34f7c6a4fc50c9f423b105923ed2e6df091b3c388d182540db02c581a0"
             ],
-            "version": "==2.1.0"
+            "version": "==3.0.0"
         },
         "py-trello": {
             "hashes": [

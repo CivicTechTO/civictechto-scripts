@@ -7,6 +7,7 @@ name = "pypi"
 click = "*"
 gspread = "*"
 "mailchimp3" = "*"
+meetup-api = {editable = true, ref = "event-v3-support", git = "https://github.com/patcon/meetup-api.git"}
 "oauth2client" = "*"
 py-trello = "*"
 pystache = "*"
