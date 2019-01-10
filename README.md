@@ -89,6 +89,17 @@ Runs day before hacknight.
 
 ![Screenshot of Slack post](https://i.imgur.com/PLUi7Lh.png)
 
+### `gsheet2meetup.py`
+
+This takes data from a GDrive spreadsheet ([sample][]), and uses it to
+create/update events in a Meetup.com group.
+
+   [sample]: https://docs.google.com/spreadsheets/d/19B5sk8zq_pYZVe0DMGCKKBP2jYolm6COfJfIq45vwCg/edit#gid=2098195688
+
+    $ python gsheet2meetup.py --help
+
+WIP: Runs nightly.
+
 ### `send_monthly_project_email.py`
 
 This take data from the [historical dataset of breakout
