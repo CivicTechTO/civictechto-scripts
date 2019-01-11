@@ -2,6 +2,7 @@ import click
 import csv
 import datetime
 import meetup.api
+import pprint
 import pystache
 import re
 import requests
@@ -19,8 +20,13 @@ CONTEXT_SETTINGS = dict(help_option_names=['--help', '-h'])
               metavar='<string>')
 @click.option('--yes', '-y',
               is_flag=True)
-def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes):
+@click.option('--debug', '-d',
+              is_flag=True,
+              default=False)
+def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes, debug):
     """Create/update events of a Meetup.com group from a Google Docs spreadsheet."""
+
+    if debug: click.echo('>>> Debug mode: enabled')
 
     if not yes:
         confirmation_details = """\
@@ -82,13 +88,17 @@ def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes):
             # TODO: if event doesn't exist, create
             # If event exists, update
             if this_event:
-                print(this_event)
-                print(row)
+                if debug:
+                    click.echo('MATCHED MEETUP EVENT')
+                    click.echo(pprint.pformat(this_event))
+                    click.echo('SPREADSHEET EVENT DATA')
+                    click.echo(pprint.pformat(row))
                 # Skip event if not ending in two asterisks "**".
                 # We are using this string as a flag for which events to manage.
                 is_event_managed = lambda ev: ev['simple_html_description'].endswith('**')
                 if not is_event_managed(this_event):
-                    print("Event found, but not managed by this script... (event description not ending in '**')")
+                    skip_event_msg = 'Event on {date} found, but not set to be managed. (Event description not ending in <**>)'
+                    click.echo(skip_event_msg.format(date=row['date']))
                     continue
 
                 r = requests.get(row['template_url'])
@@ -105,16 +115,16 @@ def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes):
                 matched_venues = [v for v in recent_venues if row['venue_name'] == v['name']]
                 if matched_venues:
                     venue = matched_venues.pop()
-                print(venue)
                 # search prior venues for partial name match
                 if not venue:
                     matched_venues = [v for v in recent_venues if row['venue_name'] in v['name']]
                     if matched_venues:
                         venue = matched_venues.pop()
-                print(venue)
 
                 # search open public venues for matches
-                if not venue:
+                # TODO: test this and enable
+                feature_enabled = False
+                if not venue and feature_enabled:
                     r = mclient.GetOpenVenues(group_urlname=meetup_group_slug)
                     nearby_venues = r.results
                     [matched_venue] = [v for v in nearby_venues if v['name'] == row['venue_name']]
