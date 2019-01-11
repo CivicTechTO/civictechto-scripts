@@ -72,8 +72,9 @@ def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes):
             gevent_start = datetime.datetime.strptime(row['date'], '%Y-%m-%d')
             gevent_start = gevent_start + datetime.timedelta(hours=int(h), minutes=int(m))
             # Ignore non-sync'd or past events
+            is_truthy = lambda s: s.lower() in ['x', 'y', 'yes', 'true', 't', '1']
             is_past = lambda d: d < datetime.datetime.now()
-            if not row['do_update'] or is_past(gevent_start):
+            if not is_truthy(row['do_update']) or is_past(gevent_start):
                 continue
             get_mevent_start = lambda ev: datetime.datetime.fromtimestamp(ev.get('time')/1000)
             [this_event] = [ev for ev in meetup_events if get_mevent_start(ev).date() == gevent_start.date()]
@@ -97,7 +98,29 @@ def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes):
 
                 # TODO: set image
 
-                # TODO: set venue
+                r = mclient.GetVenues(group_urlname=meetup_group_slug)
+                recent_venues = r.results
+                venue = None
+                # search prior venues for exact name match
+                matched_venues = [v for v in recent_venues if row['venue_name'] == v['name']]
+                if matched_venues:
+                    venue = matched_venues.pop()
+                print(venue)
+                # search prior venues for partial name match
+                if not venue:
+                    matched_venues = [v for v in recent_venues if row['venue_name'] in v['name']]
+                    if matched_venues:
+                        venue = matched_venues.pop()
+                print(venue)
+
+                # search open public venues for matches
+                if not venue:
+                    r = mclient.GetOpenVenues(group_urlname=meetup_group_slug)
+                    nearby_venues = r.results
+                    [matched_venue] = [v for v in nearby_venues if v['name'] == row['venue_name']]
+                    # TODO: Search partial match?
+
+                # TODO: Fetch venue ID into spreadsheet? Might just be confusing.
 
                 # TODO: set organizers
 
@@ -106,7 +129,7 @@ def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes):
                     'id': this_event['id'],
                     'name': row['title_full'],
                     'rsvp_limit': row['rsvp_limit'],
-                    # Pass spreadsheet dict into template func, do token replacement via header names.
+                    'how_to_find_us': row['how_to_find_us'],
                     'description': desc,
                 }
                 response = mclient.EditEvent(**event_data)
