@@ -5,21 +5,32 @@ import meetup.api
 import pystache
 import re
 import requests
+import textwrap
 
 CONTEXT_SETTINGS = dict(help_option_names=['--help', '-h'])
 
 # TODO: Document pipenv support
 @click.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--gsheet-url',
-              default='https://docs.google.com/spreadsheets/d/19B5sk8zq_pYZVe0DMGCKKBP2jYolm6COfJfIq45vwCg/edit#gid=2098195688',
               metavar='<url>')
 @click.option('--meetup-api-key',
               metavar='<string>')
 @click.option('--meetup-group-slug',
-              default='Civic-Tech-Toronto',
               metavar='<string>')
-def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug):
+@click.option('--yes', '-y',
+              is_flag=True)
+def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes):
     """Create/update events of a Meetup.com group from a Google Docs spreadsheet."""
+
+    if not yes:
+        confirmation_details = """\
+            We are using the following configuration:
+              * Meetup Group:    {group}
+              * Spreadsheet URL: {url}"""
+              # TODO: Find and display spreadsheet title
+        confirmation_details = confirmation_details.format(group=meetup_group_slug, url=gsheet_url)
+        click.echo(textwrap.dedent(confirmation_details))
+        click.confirm('Do you want to continue?', abort=True)
 
     mclient = meetup.api.Client(meetup_api_key)
     response = mclient.GetEvents({
@@ -66,6 +77,9 @@ def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug):
                 continue
             get_mevent_start = lambda ev: datetime.datetime.fromtimestamp(ev.get('time')/1000)
             [this_event] = [ev for ev in meetup_events if get_mevent_start(ev).date() == gevent_start.date()]
+
+            # TODO: if event doesn't exist, create
+            # If event exists, update
             if this_event:
                 print(this_event)
                 print(row)
