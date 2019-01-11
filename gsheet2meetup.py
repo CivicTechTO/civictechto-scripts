@@ -7,6 +7,7 @@ import pystache
 import re
 import requests
 import textwrap
+import time
 
 CONTEXT_SETTINGS = dict(help_option_names=['--help', '-h'])
 
@@ -64,6 +65,9 @@ def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes, debug):
     CSV_URL_TEMPLATE = 'https://docs.google.com/spreadsheets/d/{key}/export?format=csv&id={key}&gid={id}'
     csv_url = CSV_URL_TEMPLATE.format(key=spreadsheet_key, id=worksheet_id)
 
+    # Epoch time used as a cache buster for urls like event description template.
+    script_time = int(time.time())
+
     # Fetch and parse event CSV.
     with requests.Session() as s:
         response = s.get(csv_url)
@@ -97,14 +101,17 @@ def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes, debug):
                 # We are using this string as a flag for which events to manage.
                 is_event_managed = lambda ev: ev['simple_html_description'].endswith('**')
                 if not is_event_managed(this_event):
-                    skip_event_msg = 'Event on {date} found, but not set to be managed. (Event description not ending in <**>)'
+                    skip_event_msg = 'Event on {date} found, but not set to be managed. To manage, add "**" to last line of event description.'
                     click.echo(skip_event_msg.format(date=row['date']))
                     continue
 
-                r = requests.get(row['template_url'])
+                template_url = "{url}?r={cachebuster}".format(url=row['template_url'], cachebuster=script_time)
+                r = requests.get(template_url)
                 desc_tmpl = r.text
                 # Pass spreadsheet dict into template func, do token replacement via header names.
                 desc = pystache.render(desc_tmpl, row)
+                # Add "**" to end of description to indicate this event as managed.
+                desc = desc + "\n\n**"
 
                 # TODO: set image
 
