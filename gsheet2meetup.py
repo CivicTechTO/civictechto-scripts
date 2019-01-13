@@ -45,7 +45,7 @@ def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes, debug):
         'status': 'upcoming',
         # re: simple_html_description
         # See: https://www.meetup.com/meetup_api/docs/:urlname/events/#createparams
-        'fields': 'venue,simple_html_description',
+        'fields': 'venue,simple_html_description,event_hosts',
     })
     meetup_events = response.results
 
@@ -114,6 +114,13 @@ def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes, debug):
                 desc = desc + "\n\n**"
 
                 # TODO: set image
+                r = mclient.GetPhotoAlbums(group_id=18761715)
+                [album] = [a for a in r.results if a['title'] == 'Meetup Group Photo Album']
+                r = mclient.GetPhotos(photo_album_id=album['photo_album_id'])
+                #click.echo(pprint.pformat(r.results))
+                file = open('logo-pl-border-2017.png', 'rb').read()
+                r = mclient.CreateGroupPhoto(await=True, group_urlname=meetup_group_slug, main=False, photo=file)
+                # TODO unfinished
 
                 r = mclient.GetVenues(group_urlname=meetup_group_slug)
                 recent_venues = r.results
@@ -139,7 +146,13 @@ def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes, debug):
 
                 # TODO: Fetch venue ID into spreadsheet? Might just be confusing.
 
-                # TODO: set organizers
+                # Set the event hosts from organizer/leadership group members.
+                r = mclient.GetProfiles(group_urlname=meetup_group_slug, role='leads')
+                lead_profiles = r.results
+                host_names = [h.strip() for h in row['hosts'].split(',')]
+                # Match names with case-insensitivity.
+                host_profiles = [m for m in lead_profiles if m['name'].lower() in host_names.lower()]
+                # TODO: If 5 slots to used up, choose random organizers (based on criteria of recent attendance?)
 
                 event_data = {
                     'urlname': meetup_group_slug,
@@ -148,6 +161,9 @@ def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes, debug):
                     'rsvp_limit': row['rsvp_limit'],
                     'how_to_find_us': row['how_to_find_us'],
                     'description': desc,
+                    # Don't RSVP for the user who supplied API token.
+                    'self_rsvp': False,
+                    'event_hosts': ','.join([str(m['member_id']) for m in host_profiles]),
                 }
                 response = mclient.EditEvent(**event_data)
 
