@@ -6,6 +6,7 @@ import pprint
 import pystache
 import re
 import requests
+import tempfile
 import textwrap
 import time
 
@@ -35,6 +36,7 @@ def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes, debug):
               * Meetup Group:    {group}
               * Spreadsheet URL: {url}"""
               # TODO: Find and display spreadsheet title
+              # Get from the file download name.
         confirmation_details = confirmation_details.format(group=meetup_group_slug, url=gsheet_url)
         click.echo(textwrap.dedent(confirmation_details))
         click.confirm('Do you want to continue?', abort=True)
@@ -113,14 +115,30 @@ def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes, debug):
                 # Add "**" to end of description to indicate this event as managed.
                 desc = desc + "\n\n**"
 
-                # TODO: set image
-                r = mclient.GetPhotoAlbums(group_id=18761715)
-                [album] = [a for a in r.results if a['title'] == 'Meetup Group Photo Album']
-                r = mclient.GetPhotos(photo_album_id=album['photo_album_id'])
-                #click.echo(pprint.pformat(r.results))
-                file = open('logo-pl-border-2017.png', 'rb').read()
-                r = mclient.CreateGroupPhoto(await=True, group_urlname=meetup_group_slug, main=False, photo=file)
-                # TODO unfinished
+                # Download image.
+                _, image_path = tempfile.mkstemp()
+                r = requests.get(row['image_url'], allow_redirects=True)
+                f = open(image_path, 'wb')
+                f.write(r.content)
+                featured_image = open(image_path, 'rb')
+
+                r = mclient.GetPhotoAlbums(group_urlname=meetup_group_slug)
+                [album] = [a for a in r.items if a['title'] == 'Meetup Group Photo Album']
+                r = mclient.GetPhotos(photo_album_id=album['id'])
+                # TODO: Download image from url.
+                image_data = mclient.CreateGroupPhoto(await=True, group_urlname=meetup_group_slug, main=False, photo=featured_image)
+                photo_id = image_data.group_photo_id
+                # Set a caption so we can know which to delete on change.
+                identifying_caption = 'Featured image for {date} event'.format(date=row['date'])
+                new_photo = mclient.EditPhoto(id=photo_id, caption=identifying_caption)
+                if debug: click.echo(pprint.pformat(new_photo.__dict__))
+                # Delete photos that are similarly-marked for this event.
+                r = mclient.GetPhotos(photo_album_id=album['id'])
+                marked_photos = [p for p in r.results if p.get('caption') == identifying_caption]
+                # Skip the one we just uploaded if it's present.
+                for photo in [p for p in marked_photos if p['photo_id'] != new_photo.photo_id]:
+                    r = mclient.DeletePhoto(id=photo['photo_id'])
+                    if debug: click.echo(r.message)
 
                 r = mclient.GetVenues(group_urlname=meetup_group_slug)
                 recent_venues = r.results
@@ -164,6 +182,8 @@ def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes, debug):
                     # Don't RSVP for the user who supplied API token.
                     'self_rsvp': False,
                     'event_hosts': ','.join([str(m['member_id']) for m in host_profiles]),
+                    # TODO: Set to zero to remove ID if none provided. (Or set default.)
+                    'featured_photo_id': photo_id,
                 }
                 response = mclient.EditEvent(**event_data)
 
