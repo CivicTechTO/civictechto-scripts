@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "a10b2a3b162b5af53e0b6fcca8e9035702cf0c88e5fc82c1a50630bd2c9bc472"
+            "sha256": "3211b0cb8d87739fd7e9140772e28982b02ed85efa057426edebf5d7e98fc117"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -118,7 +118,7 @@
         "meetup-api": {
             "editable": true,
             "git": "https://github.com/patcon/meetup-api.git",
-            "ref": "8b6b6b6304b6273c2fa41f7a1068632aac1dee9f"
+            "ref": "4a1aa2ae76166ac9ddb6cf56c60104c7d4e69822"
         },
         "oauth2client": {
             "hashes": [
@@ -209,10 +209,10 @@
         },
         "requests-oauthlib": {
             "hashes": [
-                "sha256:8886bfec5ad7afb391ed5443b1f697c6f4ae98d0e5620839d8b4499c032ada3f",
-                "sha256:e21232e2465808c0e892e0e4dbb8c2faafec16ac6dc067dd546e9b466f3deac8"
+                "sha256:bd6533330e8748e94bf0b214775fed487d309b8b8fe823dc45641ebcd9a32f57",
+                "sha256:d3ed0c8f2e3bbc6b344fa63d6f933745ab394469da38db16bdddb461c7e25140"
             ],
-            "version": "==1.0.0"
+            "version": "==1.2.0"
         },
         "rsa": {
             "hashes": [
@@ -252,9 +252,9 @@
         },
         "wrapt": {
             "hashes": [
-                "sha256:d4d560d479f2c21e1b5443bbd15fe7ec4b37fe7e53d335d3b9b0a7b1226fe3c6"
+                "sha256:e03f19f64d81d0a3099518ca26b04550026f131eced2e76ced7b85c6b8d32128"
             ],
-            "version": "==1.10.11"
+            "version": "==1.11.0"
         }
     },
     "develop": {}
