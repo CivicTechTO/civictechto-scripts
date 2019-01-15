@@ -149,9 +149,9 @@ def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes, debug):
                 # Set the event hosts from organizer/leadership group members.
                 r = mclient.GetProfiles(group_urlname=meetup_group_slug, role='leads')
                 lead_profiles = r.results
-                host_names = [h.strip() for h in row['hosts'].split(',')]
+                host_names = [h.strip().lower() for h in row['hosts'].split(',')]
                 # Match names with case-insensitivity.
-                host_profiles = [m for m in lead_profiles if m['name'].lower() in host_names.lower()]
+                host_profiles = [m for m in lead_profiles if m['name'].lower() in host_names]
                 # TODO: If 5 slots to used up, choose random organizers (based on criteria of recent attendance?)
 
                 event_data = {
