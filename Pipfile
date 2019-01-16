@@ -1,0 +1,23 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+click = "*"
+gspread = "*"
+"mailchimp3" = "*"
+meetup-api = {editable = true, ref = "develop", git = "https://github.com/patcon/meetup-api.git"}
+"oauth2client" = "*"
+py-trello = "*"
+pystache = "*"
+python-dotenv = "*"
+requests = "*"
+slackclient = "*"
+"Jinja2" = "*"
+PyGithub = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.6"

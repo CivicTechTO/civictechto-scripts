@@ -32,13 +32,16 @@ Here's a diagram showing how project pitch information flows into, through and o
 
 ### Setup
 
-We recommend using `virtualenvwrapper` for isolating your Python
-environment. Then just follow these steps.
+We recommend using `pipenv` for isolating your Python
+environment. After installing, just follow these steps.
 
 1. Install the required packages:
 
-    ```
-    $ pip install -r requirements.txt
+    ```sh
+    # Run this only first-time or after pulling git changes.
+    $ pipenv install
+    # Run this at the start of each terminal session.
+    $ pipenv shell
     ```
 
 2. Copy the configuration file:
@@ -47,7 +50,8 @@ environment. Then just follow these steps.
     $ cp sample.env .env
     ```
 
-3. Edit the file according to its comments.
+3. Edit the file according to its comments. (Some scripts can take
+   command-line args directly.)
 
 ## Scripts
 
@@ -88,6 +92,37 @@ message in Slack's `#organizing-open` channel, announcing who signed up for each
 Runs day before hacknight.
 
 ![Screenshot of Slack post](https://i.imgur.com/PLUi7Lh.png)
+
+### `gsheet2meetup.py`
+
+This takes data from a GDrive spreadsheet ([sample][sample_sheet]), and
+uses it to create/update events in a Meetup.com group. It uses a simple
+template format, populated by spreadsheet columns, for the event
+description ([sample][desc_template]).
+
+   [sample_sheet]: https://docs.google.com/spreadsheets/d/19B5sk8zq_pYZVe0DMGCKKBP2jYolm6COfJfIq45vwCg/edit#gid=2098195688
+   [desc_template]: examples/meetup_event_template.txt
+
+```
+$ python gsheet2meetup.py --help
+
+Usage: gsheet2meetup.py [OPTIONS]
+
+  Create/update events of a Meetup.com group from a Google Docs spreadsheet.
+
+Options:
+  --gsheet-url <url>            URL to publicly readable Google Spreadsheet,
+                                including sheet ID gid  [required]
+  --meetup-api-key <string>     API key for member of leadership team
+                                [required]
+  --meetup-group-slug <string>  Meetup group name from URL  [required]
+  -y, --yes                     Skip confirmation prompt
+  -d, --debug                   Show full debug output
+  --noop                        Skip API calls that change/destroy data
+  -h, --help                    Show this message and exit.
+```
+
+WIP: Runs nightly.
 
 ### `send_monthly_project_email.py`
 

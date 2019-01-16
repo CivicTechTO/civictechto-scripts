@@ -1,0 +1,42 @@
+{{{ description_intro }}}
+
++ Presenter:
+
+{{{ presenter_details_section }}}
+
++ Social Media Cheat Codes:
+
+{{{ presenter_social_media }}}
+
++ Biographies:
+
+{{{ presenter_bios }}}
+
++ Venue Sponsor:
+
+{{{ venue_sponsor_section }}}
+
++ Check-in details:
+
+{{{ checkin_notes }}}
+
+If you run into any issues, then please send a message to our "doorbell" at 780-652-2649 (780-6LAB-6IX), and the organizers will get a notification.
+
++ Accessibility:
+
+{{{ accessibility_section }}}
+
++ About Us:
+
+Our weekly civic tech hacknights bring together designers, coders, urban planners, government staff, mappers, policy-makers, students, communications strategists, and all other Torontonians who share an interest in making Toronto more responsive, prosperous, sustainable and equitable, through design, tech, and data. (Coders are welcome, but you don’t have to be a coder to contribute!) Come and be part of it!
+
++ Agenda:
+
+6:30-7: Welcome and intros
+7-7:30: Presentation and Q&A/discussion
+7:30-9: Breakout groups (make something!)
+
+For more info, visit http://civictech.ca
+Here's our Code of Conduct: http://civictech.ca/about-us
+
+Hope to see you Tuesday!

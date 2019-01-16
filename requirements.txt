@@ -1,6 +1,8 @@
+click
 gspread
 jinja2
 mailchimp3
+meetup-api
 oauth2client
 py-trello
 pygithub
