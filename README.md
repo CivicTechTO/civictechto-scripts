@@ -32,13 +32,16 @@ Here's a diagram showing how project pitch information flows into, through and o
 
 ### Setup
 
-We recommend using `virtualenvwrapper` for isolating your Python
-environment. Then just follow these steps.
+We recommend using `pipenv` for isolating your Python
+environment. After installing, just follow these steps.
 
 1. Install the required packages:
 
-    ```
-    $ pip install -r requirements.txt
+    ```sh
+    # Run this only first-time or after pulling git changes.
+    $ pipenv install
+    # Run this at the start of each terminal session.
+    $ pipenv shell
     ```
 
 2. Copy the configuration file:
@@ -47,7 +50,8 @@ environment. Then just follow these steps.
     $ cp sample.env .env
     ```
 
-3. Edit the file according to its comments.
+3. Edit the file according to its comments. (Some scripts can take
+   command-line args directly.)
 
 ## Scripts
 

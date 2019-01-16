@@ -27,7 +27,6 @@ class dotdefaultdict(defaultdict):
     def __setattr__(self, key, value):
         self[key] = value
 
-# TODO: Document pipenv support
 @click.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--gsheet-url',
               required=True,
