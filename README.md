@@ -96,7 +96,24 @@ create/update events in a Meetup.com group.
 
    [sample]: https://docs.google.com/spreadsheets/d/19B5sk8zq_pYZVe0DMGCKKBP2jYolm6COfJfIq45vwCg/edit#gid=2098195688
 
-    $ python gsheet2meetup.py --help
+```
+$ python gsheet2meetup.py --help
+
+Usage: gsheet2meetup.py [OPTIONS]
+
+  Create/update events of a Meetup.com group from a Google Docs spreadsheet.
+
+Options:
+  --gsheet-url <url>            URL to publicly readable Google Spreadsheet,
+                                including sheet ID gid  [required]
+  --meetup-api-key <string>     API key for member of leadership team
+                                [required]
+  --meetup-group-slug <string>  Meetup group name from URL  [required]
+  -y, --yes                     Skip confirmation prompt
+  -d, --debug                   Show full debug output
+  --noop                        Skip API calls that change/destroy data
+  -h, --help                    Show this message and exit.
+```
 
 WIP: Runs nightly.
 
