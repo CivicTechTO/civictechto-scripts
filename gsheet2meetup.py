@@ -1,4 +1,5 @@
 import click
+from collections import defaultdict
 import csv
 import datetime
 import meetup.api
@@ -12,23 +13,45 @@ import time
 
 CONTEXT_SETTINGS = dict(help_option_names=['--help', '-h'])
 
+class dotdefaultdict(defaultdict):
+    """dot.notation access to default dictionary attributes"""
+    def __init__(self, default_factory):
+        super(dotdefaultdict, self).__init__(default_factory)
+
+    def __getattr__(self, key):
+        try:
+            return self[key]
+        except KeyError:
+            raise AttributeError(key)
+
+    def __setattr__(self, key, value):
+        self[key] = value
+
 # TODO: Document pipenv support
 @click.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--gsheet-url',
               required=True,
+              help='URL to publicly readable Google Spreadsheet, including sheet ID gid',
               metavar='<url>')
 @click.option('--meetup-api-key',
               required=True,
+              help='API key for member of leadership team',
               metavar='<string>')
 @click.option('--meetup-group-slug',
               required=True,
+              help='Meetup group name from URL',
               metavar='<string>')
 @click.option('--yes', '-y',
+              help='Skip confirmation prompt',
               is_flag=True)
 @click.option('--debug', '-d',
               is_flag=True,
+              help='Show full debug output',
               default=False)
-def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes, debug):
+@click.option('--noop',
+              help='Skip API calls that change/destroy data',
+              is_flag=True)
+def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes, debug, noop):
     """Create/update events of a Meetup.com group from a Google Docs spreadsheet."""
 
     if debug: click.echo('>>> Debug mode: enabled')
@@ -149,19 +172,37 @@ def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes, debug):
                     r = mclient.GetPhotoAlbums(group_urlname=meetup_group_slug)
                     [album] = [a for a in r.items if a['title'] == 'Meetup Group Photo Album']
                     # Upload a photo to the default album.
-                    image_data = mclient.CreateGroupPhoto(await=True, group_urlname=meetup_group_slug, main=False, photo=featured_image)
+                    if noop:
+                        image_data = dotdefaultdict(lambda: '')
+                    else:
+                        image_data = mclient.CreateGroupPhoto(await=True, group_urlname=meetup_group_slug, main=False, photo=featured_image)
+                        if debug:
+                            click.echo('>>> Created photo:')
+                            click.echo(pprint.pformat(image_data.__dict__))
                     photo_id = image_data.group_photo_id
                     # Set a caption to tag this photo as managed for this event.
                     identifying_caption = 'Featured image for {date} event'.format(date=row['date'])
-                    new_photo = mclient.EditPhoto(id=photo_id, caption=identifying_caption)
-                    if debug: click.echo(pprint.pformat(new_photo.__dict__))
+
+                    if noop:
+                        new_photo = dotdefaultdict(lambda: '')
+                    else:
+                        new_photo = mclient.EditPhoto(id=photo_id, caption=identifying_caption)
+                        if debug:
+                            click.echo('>>> Edited photo:')
+                            click.echo(pprint.pformat(new_photo.__dict__))
+
                     # Delete existing photo that are tagged for this event.
                     r = mclient.GetPhotos(photo_album_id=album['id'])
                     marked_photos = [p for p in r.results if p.get('caption') == identifying_caption]
                     # Skip the one we just uploaded if it's present.
                     for photo in [p for p in marked_photos if p['photo_id'] != new_photo.photo_id]:
-                        r = mclient.DeletePhoto(id=photo['photo_id'])
-                        if debug: click.echo(">>> " + r.message)
+                        if noop:
+                            r = dotdefaultdict(lambda: '')
+                        else:
+                            r = mclient.DeletePhoto(id=photo['photo_id'])
+                            if debug:
+                                click.echo('>>> Deleted photo:')
+                                click.echo(">>> " + r.message)
                     # TODO: Set to zero to remove ID if none provided. (Or set default.)
                     event_data['featured_photo_id'] = photo_id
 
@@ -202,7 +243,13 @@ def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes, debug):
                     event_data['event_hosts'] = host_ids
 
                 if debug: click.echo(">>> Updating event with current properties:\n" + pprint.pformat(event_data))
-                response = mclient.EditEvent(**event_data)
+                if noop:
+                    response = dotdefaultdict(lambda: '')
+                else:
+                    response = mclient.EditEvent(**event_data)
+                    if debug:
+                        click.echo('>>> Updated event:')
+                        click.echo(pprint.pformat(response.__dict__))
 
 if __name__ == '__main__':
     gsheet2meetup(auto_envvar_prefix='CTTO')
