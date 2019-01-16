@@ -199,7 +199,7 @@ jobs:
             pipenv sync --dev
             pipenv run python gsheet2meetup.py --yes \
               --meetup-group-slug "Civic-Tech-Toronto" \
-              --gsheet-url "https://docs.google.com/spreadsheets/d/19B5sk8zq_pYZVe0DMGCKKBP2jYolm6COfJfIq45vwCg/edit#gid=2098195688"
+              --gsheet-url "https://docs.google.com/spreadsheets/d/1-p0CyUMC0nqrEQNc6Yikd2vg033GoChSWR8rFKFxfgU/edit#gid=1209202081"
 
   # Doesn't yet run in workflow
   email_monthly_update:
