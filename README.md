@@ -91,10 +91,13 @@ Runs day before hacknight.
 
 ### `gsheet2meetup.py`
 
-This takes data from a GDrive spreadsheet ([sample][]), and uses it to
-create/update events in a Meetup.com group.
+This takes data from a GDrive spreadsheet ([sample][sample_sheet]), and
+uses it to create/update events in a Meetup.com group. It uses a simple
+template format, populated by spreadsheet columns, for the event
+description ([sample][desc_template]).
 
-   [sample]: https://docs.google.com/spreadsheets/d/19B5sk8zq_pYZVe0DMGCKKBP2jYolm6COfJfIq45vwCg/edit#gid=2098195688
+   [sample_sheet]: https://docs.google.com/spreadsheets/d/19B5sk8zq_pYZVe0DMGCKKBP2jYolm6COfJfIq45vwCg/edit#gid=2098195688
+   [desc_template]: examples/meetup_event_template.txt
 
 ```
 $ python gsheet2meetup.py --help
