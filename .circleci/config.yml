@@ -57,7 +57,7 @@ version: 2
 jobs:
   default: &default_job
     docker:
-      - image: circleci/python:3.6.2
+      - image: circleci/python:3.6.4
     # See sample.env file for full details
     environment:
         # Used to ignore cleaning CT101 card from pitch list, but seems better
@@ -196,8 +196,8 @@ jobs:
           name: run script
           # Meetup key set as envvar CTTO_MEETUP_API_KEY
           command: |
-            . venv/bin/activate
-            python3 gsheet2meetup.py --yes \
+            pipenv sync --dev
+            pipenv run python gsheet2meetup.py --yes \
               --meetup-group-slug "Civic-Tech-Toronto" \
               --gsheet-url "https://docs.google.com/spreadsheets/d/19B5sk8zq_pYZVe0DMGCKKBP2jYolm6COfJfIq45vwCg/edit#gid=2098195688"
 
