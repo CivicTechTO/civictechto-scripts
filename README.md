@@ -122,7 +122,7 @@ Options:
   -h, --help                    Show this message and exit.
 ```
 
-WIP: Runs nightly.
+Runs nightly.
 
 ### `send_monthly_project_email.py`
 
