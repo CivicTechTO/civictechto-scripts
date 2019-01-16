@@ -52,7 +52,38 @@ class dotdefaultdict(defaultdict):
               help='Skip API calls that change/destroy data',
               is_flag=True)
 def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes, debug, noop):
-    """Create/update events of a Meetup.com group from a Google Docs spreadsheet."""
+    """Create/update events of a Meetup.com group from a Google Docs spreadsheet.
+
+    The following fields are available:
+
+        * do_update: Only rows with a mark here will be updated/created.
+
+        * date: The date of the event to match, format YYYY-MM-DD.
+
+        * title_full: The name of the Meetup event.
+
+        * image_url: Featured event image. Recommended: 600x338 (16:9 ratio)
+
+        * template_url: URL to a plaintext template file. It will be processed
+            as a handlebar template, and will pass in all header names as template
+            variables for replacement. Create new columns to add new variables.
+
+        * One-for-one fields that pass strings and integers directly as-is:
+            how_to_find_us, rsvp_limit, guest_limit, questions
+
+        * venue_name: Looks for exact matches in past venues, then partial
+            matches, then exact matches in public open venues. (It will not
+            create new venues at the moment.)
+
+        * venue_visibility: Vibility of venue details. Options: 'public' or 'members'.
+
+        * hosts: Use a comma-separated list of names. Will look for EXACT
+            matches in the list of group leadership.
+
+    If a field is not provided or the column is missing, it will simply be ignored.
+
+    To explicitly unset certain fields, set its value to one of: none, ---, --, -, na, n/a, tbd, tba
+    """
 
     if debug: click.echo('>>> Debug mode: enabled')
 
