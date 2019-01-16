@@ -15,10 +15,13 @@ CONTEXT_SETTINGS = dict(help_option_names=['--help', '-h'])
 # TODO: Document pipenv support
 @click.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--gsheet-url',
+              required=True,
               metavar='<url>')
 @click.option('--meetup-api-key',
+              required=True,
               metavar='<string>')
 @click.option('--meetup-group-slug',
+              required=True,
               metavar='<string>')
 @click.option('--yes', '-y',
               is_flag=True)
