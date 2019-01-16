@@ -143,10 +143,18 @@ def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes, debug, noo
                 }
 
                 # If a field can be set by a simple string, allow it to be set
-                # from self-same spreadsheet column key.
-                API_STRING_FIELDS = ['rsvp_limit', 'how_to_find_us']
+                # from self-same spreadsheet column key. Use 'none' to unset, and ignore empty fields.
+                API_STR_FIELDS = ['how_to_find_us', 'venue_visibility', 'question']
+                API_NUM_FIELDS = ['rsvp_limit', 'guest_limit']
+                UNSET_KEYWORDS = ['none', '-', '--', '---', 'n/a', 'na', 'tba', 'tbd']
                 for key in row.keys():
-                    if row[key] and key in API_STRING_FIELDS:
+                    if key in API_STR_FIELDS + API_NUM_FIELDS:
+                        if not row[key]:
+                            continue
+                        if row[key].lower() in UNSET_KEYWORDS:
+                            unset_val = '' if key in API_STR_FIELDS else '0'
+                            event_data[key] = unset_val
+                            continue
                         event_data[key] = row[key]
 
                 # Set event description from template
@@ -167,6 +175,7 @@ def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes, debug, noo
                     f = open(image_path, 'wb')
                     f.write(r.content)
                     featured_image = open(image_path, 'rb')
+                    # TODO: Get hash of file and store in caption.
 
                     # Get the group default album.
                     r = mclient.GetPhotoAlbums(group_urlname=meetup_group_slug)
