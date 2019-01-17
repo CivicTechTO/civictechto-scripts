@@ -42,7 +42,7 @@ class dotdefaultdict(defaultdict):
               help='Meetup group name from URL',
               metavar='<string>')
 @click.option('--yes', '-y',
-              help='Skip confirmation prompt',
+              help='Skip confirmation prompts',
               is_flag=True)
 @click.option('--debug', '-d',
               is_flag=True,
@@ -115,7 +115,7 @@ def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes, debug, noo
     })
     meetup_events = response.results
 
-    gsheet_url_re = re.compile('https://docs.google.com/spreadsheets/d/([\w-_]+)/(?:edit|view)(?:#gid=([0-9]+))?')
+    gsheet_url_re = re.compile('https://docs.google.com/spreadsheets/d/([\w_-]+)/(?:edit|view)(?:#gid=([0-9]+))?')
     matches = gsheet_url_re.match(gsheet_url)
 
     # Raise error if key not parseable.
@@ -140,7 +140,6 @@ def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes, debug, noo
         content = response.content.decode('utf-8')
         content = content.split('\r\n')
         reader = csv.DictReader(content, delimiter=',')
-        reader.fieldnames
         for row in reader:
             # Set date of event start.
             EVENT_START_TIME = '18:30'
