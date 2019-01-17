@@ -77,6 +77,10 @@ def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes, debug, noo
 
         * venue_visibility: Vibility of venue details. Options: 'public' or 'members'.
 
+        * ready_to_announce: Before 7 days in advance of event, marking this
+            column with 'x' will send an announcement to group members. (Once per
+            event)
+
         * hosts: Use a comma-separated list of names. Will look for EXACT
             matches in the list of group leadership.
 
@@ -86,6 +90,8 @@ def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes, debug, noo
     """
 
     if debug: click.echo('>>> Debug mode: enabled')
+
+    if noop: click.echo('>>> No-op mode: enabled (No operations affecting data will be run)')
 
     if not yes:
         confirmation_details = """\
@@ -149,8 +155,11 @@ def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes, debug, noo
             [this_event] = [ev for ev in meetup_events if get_mevent_start(ev).date() == gevent_start.date()]
 
             # TODO: if event doesn't exist, create
+            if not this_event:
+                raise 'Ability to create events not yet implemented, only event update.'
+
             # If event exists, update
-            if this_event:
+            else:
                 # Skip event if not ending in two asterisks "**".
                 # We are using this string as a flag for which events to manage.
                 is_event_managed = lambda ev: ev['simple_html_description'].endswith('**')
@@ -172,6 +181,15 @@ def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes, debug, noo
                     # Don't RSVP for the user who supplied API token.
                     'self_rsvp': False,
                 }
+
+                # If set to ready, and not yet announced.
+                if is_truthy(row['ready_to_announce']) and not this_event['announced']:
+
+                    if not yes:
+                        # TODO: Add some check for days prior to event.
+                        click.echo('Ready to announce meetup: ' + row['title_full'])
+                        click.confirm('Are you sure you wish to announce?', abort=True)
+                        event_data['announce'] = True
 
                 # If a field can be set by a simple string, allow it to be set
                 # from self-same spreadsheet column key. Use 'none' to unset, and ignore empty fields.
@@ -283,6 +301,7 @@ def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes, debug, noo
                 if debug: click.echo(">>> Updating event with current properties:\n" + pprint.pformat(event_data))
                 if noop:
                     response = dotdefaultdict(lambda: '')
+                    click.echo('Command exited no-op mode without creating/updating any events.')
                 else:
                     response = mclient.EditEvent(**event_data)
                     if debug:
