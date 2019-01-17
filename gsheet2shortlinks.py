@@ -57,7 +57,27 @@ def lookup_link(links=[], slashtag=''):
               help='Skip API calls that change/destroy data',
               is_flag=True)
 def gsheet2rebrandly(rebrandly_api_key, gsheet, domain_name, yes, debug, noop):
-    """Create/update Rebrandly shortlinks from a Google Docs spreadsheet."""
+    """Create/update Rebrandly shortlinks from a Google Docs spreadsheet.
+
+    Here are some notes on spreadsheet columns:
+
+        * slashtag: the shortlink component of path.
+
+        * destination_url: where the shortlink points to.
+
+        * If the following columns exist and a --google-creds option is passed, they will be updated:
+
+            * Note: These features are not yet implemented.
+
+            * created: date and time when the link was created and tracking began.
+
+            * clicks: number of click-through since creation.
+
+        * Extra columns will have no effect.
+
+    Sample Spreadsheet:
+        https://docs.google.com/spreadsheets/d/12VUXPCpActC77wy6Q8Khyb-iZ_nlNwshO8XswYRj5XE/edit#gid=776462093
+    """
 
     if debug: click.echo('>>> Debug mode: enabled')
 
