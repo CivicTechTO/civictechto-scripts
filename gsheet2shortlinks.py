@@ -151,29 +151,35 @@ def gsheet2rebrandly(rebrandly_api_key, gsheet, domain_name, yes, debug, noop):
         link = lookup_link(links, row['slashtag'])
         if link:
             # TODO: Hit page to get real title.
-            payload['title'] = link['title']
-            r = requests.post('https://api.rebrandly.com/v1/links/'+link['id'],
-                              data=json.dumps(payload),
-                              headers={
-                                  'apikey': rebrandly_api_key,
-                                  'Content-Type': 'application/json',
-                              })
-            if r.status_code != requests.codes.ok:
-                click.echo(pprint.pformat(r.__dict__))
-                raise click.Abort()
+            if noop:
+                pass
+            else:
+                payload['title'] = link['title']
+                r = requests.post('https://api.rebrandly.com/v1/links/'+link['id'],
+                                  data=json.dumps(payload),
+                                  headers={
+                                      'apikey': rebrandly_api_key,
+                                      'Content-Type': 'application/json',
+                                  })
+                if r.status_code != requests.codes.ok:
+                    click.echo(pprint.pformat(r.__dict__))
+                    raise click.Abort()
             click.echo('Updated shortlink: '+row['slashtag'])
         else:
-            payload['domain'] = {'fullName': domain_name}
-            payload['slashtag'] = row['slashtag']
-            r = requests.post('https://api.rebrandly.com/v1/links',
-                              data=json.dumps(payload),
-                              headers={
-                                  'apikey': rebrandly_api_key,
-                                  'Content-Type': 'application/json',
-                              })
-            if r.status_code != requests.codes.ok:
-                click.echo(pprint.pformat(r))
-                raise click.Abort()
+            if noop:
+                pass
+            else:
+                payload['domain'] = {'fullName': domain_name}
+                payload['slashtag'] = row['slashtag']
+                r = requests.post('https://api.rebrandly.com/v1/links',
+                                  data=json.dumps(payload),
+                                  headers={
+                                      'apikey': rebrandly_api_key,
+                                      'Content-Type': 'application/json',
+                                  })
+                if r.status_code != requests.codes.ok:
+                    click.echo(pprint.pformat(r))
+                    raise click.Abort()
             click.echo('Created shortlink: '+row['slashtag'])
 
     if noop: click.echo('Command exited no-op mode without creating/updating any data.')
