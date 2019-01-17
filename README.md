@@ -124,6 +124,19 @@ Options:
 
 Runs nightly.
 
+### `gsheet2shortlinks.py`
+
+This takes data from a GDrive spreadsheet ([sample][sample_shortlink_sheet]), and
+uses it to create/update shortlinks managed on Rebrandly.
+
+   [sample_shortlink_sheet]: https://docs.google.com/spreadsheets/d/12VUXPCpActC77wy6Q8Khyb-iZ_nlNwshO8XswYRj5XE/edit#gid=776462093
+
+```
+$ python gsheet2shortlinks.py --help
+```
+
+WIP: Runs nightly.
+
 ### `send_monthly_project_email.py`
 
 This take data from the [historical dataset of breakout
