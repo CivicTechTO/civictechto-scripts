@@ -5,6 +5,7 @@ import pprint
 import re
 import requests
 import textwrap
+import urllib
 
 CONTEXT_SETTINGS = dict(help_option_names=['--help', '-h'])
 GSHEET_URL_RE = re.compile('https://docs.google.com/spreadsheets/d/([\w_-]+)/(?:edit|view)(?:#gid=([0-9]+))?')
@@ -83,6 +84,30 @@ def gsheet2rebrandly(rebrandly_api_key, gsheet, domain_name, yes, debug, noop):
 
     if noop: click.echo('>>> No-op mode: enabled (No operations affecting data will be run)')
 
+    ### Fetch spreadsheet
+
+    spreadsheet_key, worksheet_id = parse_gsheet_url(gsheet)
+    CSV_URL_TEMPLATE = 'https://docs.google.com/spreadsheets/d/{key}/export?format=csv&id={key}&gid={id}'
+    csv_url = CSV_URL_TEMPLATE.format(key=spreadsheet_key, id=worksheet_id)
+    # Fetch and parse shortlink CSV.
+    r = requests.get(csv_url)
+    if r.status_code != requests.codes.ok:
+        raise click.Abort()
+    csv_content = r.content.decode('utf-8')
+    csv_content = csv_content.split('\r\n')
+
+    ### Confirm spreadsheet title
+
+    cd_header = r.headers.get('Content-Disposition')
+    # See: https://tools.ietf.org/html/rfc5987#section-3.2.1 (ext-value definition)
+    m = re.search("filename\*=(?P<charset>.+)'(?P<language>.*)'(?P<filename>.+)", cd_header)
+    filename = m.group('filename')
+    filename = urllib.parse.unquote(filename)
+    # Remove csv filename suffix.
+    filename = filename[:-len('.csv')]
+
+    ### Confirm domain
+
     r = requests.get('https://api.rebrandly.com/v1/domains',
                      headers={'apikey': rebrandly_api_key})
     if r.status_code != requests.codes.ok:
@@ -114,14 +139,17 @@ def gsheet2rebrandly(rebrandly_api_key, gsheet, domain_name, yes, debug, noop):
             domain = my_domains.pop()
             domain_name = domain['fullName']
 
+    ### Output confirmation to user
+
     if not yes:
         confirmation_details = """\
             We are using the following configuration:
-              * Shortlink Domain: {domain}
-              * Spreadsheet URL:  {url}"""
+              * Shortlink Domain:        {domain}
+              * Spreadsheet - Worksheet: {name}
+              * Spreadsheet URL:         {url}"""
               # TODO: Find and display spreadsheet title
               # Get from the file download name.
-        confirmation_details = confirmation_details.format(domain=domain_name, url=gsheet)
+        confirmation_details = confirmation_details.format(domain=domain_name, url=gsheet, name=filename)
         click.echo(textwrap.dedent(confirmation_details))
         click.confirm('Do you want to continue?', abort=True)
 
@@ -132,16 +160,8 @@ def gsheet2rebrandly(rebrandly_api_key, gsheet, domain_name, yes, debug, noop):
         raise click.Abort()
     links = r.json()
 
-    spreadsheet_key, worksheet_id = parse_gsheet_url(gsheet)
-    CSV_URL_TEMPLATE = 'https://docs.google.com/spreadsheets/d/{key}/export?format=csv&id={key}&gid={id}'
-    csv_url = CSV_URL_TEMPLATE.format(key=spreadsheet_key, id=worksheet_id)
-    # Fetch and parse shortlink CSV.
-    r = requests.get(csv_url)
-    if r.status_code != requests.codes.ok:
-        raise click.Abort()
-    content = r.content.decode('utf-8')
-    content = content.split('\r\n')
-    reader = csv.DictReader(content, delimiter=',')
+    # Iterate through CSV content and perform actions on data
+    reader = csv.DictReader(csv_content, delimiter=',')
     for row in reader:
         # TODO: If destination_url empty, delete link.
         # TODO: Deal with error when editing trashed link.
