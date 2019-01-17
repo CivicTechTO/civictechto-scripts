@@ -75,7 +75,8 @@ def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes, debug, noo
             matches, then exact matches in public open venues. (It will not
             create new venues at the moment.)
 
-        * venue_visibility: Vibility of venue details. Options: 'public' or 'members'.
+        * venue_visibility: Vibility of venue details.
+            Options: 'public' or 'members'. Default: members
 
         * ready_to_announce: Before 7 days in advance of event, marking this
             column with 'x' will send an announcement to group members. (Once per
@@ -110,7 +111,7 @@ def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes, debug, noo
         'status': 'upcoming',
         # re: simple_html_description
         # See: https://www.meetup.com/meetup_api/docs/:urlname/events/#createparams
-        'fields': 'venue,simple_html_description,event_hosts',
+        'fields': 'venue,venue_visibility,simple_html_description,event_hosts',
     })
     meetup_events = response.results
 
@@ -180,6 +181,8 @@ def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes, debug, noo
                     'name': row['title_full'],
                     # Don't RSVP for the user who supplied API token.
                     'self_rsvp': False,
+                    # Default to 'members' only
+                    'venue_visibility': row.get('venue_visibility', 'members')
                 }
 
                 # If set to ready, and not yet announced.
@@ -192,7 +195,7 @@ def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes, debug, noo
 
                 # If a field can be set by a simple string, allow it to be set
                 # from self-same spreadsheet column key. Use 'none' to unset, and ignore empty fields.
-                API_STR_FIELDS = ['how_to_find_us', 'venue_visibility', 'question']
+                API_STR_FIELDS = ['how_to_find_us', 'question']
                 API_NUM_FIELDS = ['rsvp_limit', 'guest_limit']
                 UNSET_KEYWORDS = ['none', '-', '--', '---', 'n/a', 'na', 'tba', 'tbd']
                 for key in row.keys():
