@@ -2,6 +2,7 @@ import click
 from collections import defaultdict
 import csv
 import datetime
+import hashlib
 import meetup.api
 import pprint
 import pystache
@@ -204,44 +205,42 @@ def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes, debug, noo
                     r = requests.get(row['image_url'], allow_redirects=True)
                     f = open(image_path, 'wb')
                     f.write(r.content)
-                    featured_image = open(image_path, 'rb')
-                    # TODO: Get hash of file and store in caption.
+                    image_file = open(image_path, 'rb')
+                    image_checksum = hashlib.md5(image_file.read()).hexdigest()
+                    image_file.seek(0)
 
-                    # Get the group default album.
-                    r = mclient.GetPhotoAlbums(group_urlname=meetup_group_slug)
-                    [album] = [a for a in r.items if a['title'] == 'Meetup Group Photo Album']
-                    # Upload a photo to the default album.
-                    if noop:
-                        image_data = dotdefaultdict(lambda: '')
+                    # Check for and use checksum'd photo if exists.
+                    r = mclient.GetPhotos(group_urlname=meetup_group_slug)
+                    dup_photos = [p for p in r.results if image_checksum in p.get('caption', '')]
+                    if dup_photos:
+                        image_obj = dup_photos.pop()
+                        photo_id = image_obj['photo_id']
+                        if debug:
+                            click.echo('>>> Found photo:')
+                            click.echo(pprint.pformat(dict(image_obj)))
+
+                    # If not, upload the image.
                     else:
-                        image_data = mclient.CreateGroupPhoto(await=True, group_urlname=meetup_group_slug, main=False, photo=featured_image)
+                        # Get the group default album.
+                        r = mclient.GetPhotoAlbums(group_urlname=meetup_group_slug)
+                        [album] = [a for a in r.items if a['title'] == 'Meetup Group Photo Album']
+
+                        # Set a caption to tag this photo as managed for this event.
+                        caption_tag = 'Featured image for {} event (id: {})'.format(row['date'], image_checksum)
+
+                        # Upload a photo to the default album.
+                        if noop:
+                            image_obj = dotdefaultdict(lambda: '')
+                        else:
+                            image_obj = mclient.CreatePhoto(await=True,
+                                                             photo_album_id=album['id'],
+                                                             caption=caption_tag,
+                                                             photo=image_file)
+                        photo_id = image_obj.event_photo_id
                         if debug:
                             click.echo('>>> Created photo:')
-                            click.echo(pprint.pformat(image_data.__dict__))
-                    photo_id = image_data.group_photo_id
-                    # Set a caption to tag this photo as managed for this event.
-                    identifying_caption = 'Featured image for {date} event'.format(date=row['date'])
+                            click.echo(pprint.pformat(image_obj.__dict__))
 
-                    if noop:
-                        new_photo = dotdefaultdict(lambda: '')
-                    else:
-                        new_photo = mclient.EditPhoto(id=photo_id, caption=identifying_caption)
-                        if debug:
-                            click.echo('>>> Edited photo:')
-                            click.echo(pprint.pformat(new_photo.__dict__))
-
-                    # Delete existing photo that are tagged for this event.
-                    r = mclient.GetPhotos(photo_album_id=album['id'])
-                    marked_photos = [p for p in r.results if p.get('caption') == identifying_caption]
-                    # Skip the one we just uploaded if it's present.
-                    for photo in [p for p in marked_photos if p['photo_id'] != new_photo.photo_id]:
-                        if noop:
-                            r = dotdefaultdict(lambda: '')
-                        else:
-                            r = mclient.DeletePhoto(id=photo['photo_id'])
-                            if debug:
-                                click.echo('>>> Deleted photo:')
-                                click.echo(">>> " + r.message)
                     # TODO: Set to zero to remove ID if none provided. (Or set default.)
                     event_data['featured_photo_id'] = photo_id
 

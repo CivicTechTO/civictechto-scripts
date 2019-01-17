@@ -118,7 +118,7 @@
         "meetup-api": {
             "editable": true,
             "git": "https://github.com/patcon/meetup-api.git",
-            "ref": "09322e2e1ea2515ebf1773792bf066b1195e0d69"
+            "ref": "b057bd105799fccc3c19577fec1e20c94f616a4f"
         },
         "oauth2client": {
             "hashes": [
