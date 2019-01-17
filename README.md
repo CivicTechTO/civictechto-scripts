@@ -111,7 +111,7 @@ Usage: gsheet2meetup.py [OPTIONS]
   Create/update events of a Meetup.com group from a Google Docs spreadsheet.
 
 Options:
-  --gsheet-url <url>            URL to publicly readable Google Spreadsheet,
+  --gsheet <url>            URL to publicly readable Google Spreadsheet,
                                 including sheet ID gid  [required]
   --meetup-api-key <string>     API key for member of leadership team
                                 [required]
