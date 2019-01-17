@@ -184,12 +184,11 @@ def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes, debug, noo
 
                 # If set to ready, and not yet announced.
                 if is_truthy(row['ready_to_announce']) and not this_event['announced']:
-
+                    click.echo('Announcing meetup: ' + row['title_full'])
                     if not yes:
-                        # TODO: Add some check for days prior to event.
-                        click.echo('Ready to announce meetup: ' + row['title_full'])
                         click.confirm('Are you sure you wish to announce?', abort=True)
-                        event_data['announce'] = True
+                    # TODO: Add some check for days prior to event.
+                    event_data['announce'] = True
 
                 # If a field can be set by a simple string, allow it to be set
                 # from self-same spreadsheet column key. Use 'none' to unset, and ignore empty fields.
@@ -301,12 +300,13 @@ def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes, debug, noo
                 if debug: click.echo(">>> Updating event with current properties:\n" + pprint.pformat(event_data))
                 if noop:
                     response = dotdefaultdict(lambda: '')
-                    click.echo('Command exited no-op mode without creating/updating any events.')
                 else:
                     response = mclient.EditEvent(**event_data)
                     if debug:
                         click.echo('>>> Updated event:')
                         click.echo(pprint.pformat(response.__dict__))
+
+    if noop: click.echo('Command exited no-op mode without creating/updating any events.')
 
 if __name__ == '__main__':
     gsheet2meetup(auto_envvar_prefix='CTTO')
