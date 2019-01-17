@@ -115,7 +115,7 @@ def gsheet2meetup(meetup_api_key, gsheet_url, meetup_group_slug, yes, debug, noo
     })
     meetup_events = response.results
 
-    gsheet_url_re = re.compile('https://docs.google.com/spreadsheets/d/([\w-]+)/(?:edit|view)(?:#gid=([0-9]+))?')
+    gsheet_url_re = re.compile('https://docs.google.com/spreadsheets/d/([\w-_]+)/(?:edit|view)(?:#gid=([0-9]+))?')
     matches = gsheet_url_re.match(gsheet_url)
 
     # Raise error if key not parseable.
