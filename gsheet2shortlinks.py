@@ -84,7 +84,7 @@ def gsheet2rebrandly(rebrandly_api_key, gsheet, domain_name, yes, debug, noop):
 
         * slashtag: the shortlink component of path.
 
-        * destination_url: where the shortlink points to.
+        * destination_url: where the shortlink points to. Leaving blank will delete on next run.
 
         * If the following columns exist and a --google-creds option is passed, they will be updated:
 
@@ -183,8 +183,20 @@ def gsheet2rebrandly(rebrandly_api_key, gsheet, domain_name, yes, debug, noop):
     # Iterate through CSV content and perform actions on data
     reader = csv.DictReader(csv_content, delimiter=',')
     for row in reader:
-        # TODO: If destination_url empty, delete link.
-        # TODO: Deal with error when editing trashed link.
+        link = lookup_link(links, row['slashtag'])
+        # TODO: Investigate if possible to trash instead of deleting outright.
+
+        # If destination_url empty, delete link.
+        if not row['destination_url']:
+            if not link:
+                click.echo('Non-existent shortlink: {} (already deleted)'.format(row['slashtag']))
+                continue
+
+            r = requests.delete('https://api.rebrandly.com/v1/links/'+link['id'],
+                                headers={'apikey': rebrandly_api_key})
+            if debug: click.echo(pprint.pformat(r))
+            click.echo('Deleted shortlink: '+row['slashtag'])
+            continue
 
         # Extract page title after redirects.
         r = requests.get(row['destination_url'], allow_redirects=True)
@@ -198,7 +210,7 @@ def gsheet2rebrandly(rebrandly_api_key, gsheet, domain_name, yes, debug, noop):
             'title': parser.title,
         }
         if debug: click.echo('>>> resolved as: ' + pprint.pformat(payload))
-        link = lookup_link(links, row['slashtag'])
+
         if link:
             if noop:
                 pass
@@ -209,10 +221,10 @@ def gsheet2rebrandly(rebrandly_api_key, gsheet, domain_name, yes, debug, noop):
                                       'apikey': rebrandly_api_key,
                                       'Content-Type': 'application/json',
                                   })
+                if debug: click.echo('>>> ' + pprint.pformat(r.json()))
                 if r.status_code != requests.codes.ok:
                     click.echo(pprint.pformat(r.__dict__))
                     raise click.Abort()
-                if debug: click.echo('>>> ' + pprint.pformat(r.json()))
             click.echo('Updated shortlink: '+row['slashtag'])
         else:
             if noop:
@@ -226,10 +238,10 @@ def gsheet2rebrandly(rebrandly_api_key, gsheet, domain_name, yes, debug, noop):
                                       'apikey': rebrandly_api_key,
                                       'Content-Type': 'application/json',
                                   })
+                if debug: click.echo('>>> ' + pprint.pformat(r.json()))
                 if r.status_code != requests.codes.ok:
                     click.echo(pprint.pformat(r))
                     raise click.Abort()
-                if debug: click.echo('>>> ' + pprint.pformat(r.json()))
             click.echo('Created shortlink: '+row['slashtag'])
 
     if noop: click.echo('Command exited no-op mode without creating/updating any data.')
