@@ -7,15 +7,19 @@ Helper scripts for CivicTechTO organizing tasks.
 We use this as a catch-all for simple scripts that help with organizing
 tasks. Many of them run automatically each week.
 
-## Technologies Used
+## Contents
 
-- **Python.** A programming langauge common in scripting.
-- [**Click.**][click] A Python library for writing simple command-line
-  tools.
-- [**CircleCI.**][circleci] A script-running service that [runs scheduled
-  tasks][circleci-cron] for us in the cloud.
-- [**Trello.**][trello] A flexible organizing and project management
-  tool that we [use to track breakout groups][trello-board].
+- [About This Repo](#about-these-automated-scripts)
+- [Technologies Used](#technologies-used)
+- [Local Development](#computer-local-development)
+- **Scripts**
+  - [`clean_pitch_list.py`](#clean_pitch_listpy)
+  - [`update_pitch_csv.py`](#update_pitch_csvpy)
+  - [`notify_slack_pitches.py`](#notify_slack_pitchespy)
+  - [`notify_slack_roles.py`](#notify_slack_rolespy)
+  - [`gsheet2meetup.py`](#gsheet2meetuppy)
+  - [`gsheet2shortlinks.py`](#gsheet2shortlinkspy)
+  - [`send_monthly_project_email.py`](#send_monthly_project_emailpy)
 
 ## About these Automated Scripts
 
@@ -27,6 +31,16 @@ Here's a diagram showing how project pitch information flows into, through and o
 
 <sub>(Click to see expanded view.)</sub><br/>
 [![Process Flow Diagram](https://docs.google.com/drawings/d/e/2PACX-1vSNrFFElzvRuHQM44PU--wO3kyDwhR54gnj6mHoXbJ_1CkRzgB2murOhFNM9DxIcnYSYGSk5naJH2p5/pub?w=600)](https://docs.google.com/drawings/d/1h9hY9eyfZzdVbIu-4pihQ6RBgrjj8PbUsHE4oHbGYUY/edit)
+
+## Technologies Used
+
+- **Python.** A programming langauge common in scripting.
+- [**Click.**][click] A Python library for writing simple command-line
+  tools.
+- [**CircleCI.**][circleci] A script-running service that [runs scheduled
+  tasks][circleci-cron] for us in the cloud.
+- [**Trello.**][trello] A flexible organizing and project management
+  tool that we [use to track breakout groups][trello-board].
 
 ## :computer: Local Development
 
