@@ -122,7 +122,54 @@ Options:
   -h, --help                    Show this message and exit.
 ```
 
-Runs nightly.
+Runs nightly at 4am ET.
+
+### `gsheet2shortlinks.py`
+
+This takes data from a GDrive spreadsheet ([sample][sample_shortlink_sheet]), and
+uses it to create/update shortlinks managed on Rebrandly.
+
+   [sample_shortlink_sheet]: https://docs.google.com/spreadsheets/d/12VUXPCpActC77wy6Q8Khyb-iZ_nlNwshO8XswYRj5XE/edit#gid=776462093
+
+```
+$ python gsheet2shortlinks.py --help
+
+Usage: gsheet2shortlinks.py [OPTIONS]
+
+  Create/update Rebrandly shortlinks from a Google Docs spreadsheet.
+
+  Here are some notes on spreadsheet columns:
+
+      * slashtag: the shortlink component of path.
+
+      * destination_url: where the shortlink points to.
+
+      * If the following columns exist and a --google-creds option is
+      passed, they will be updated:
+
+          * Note: These features are not yet implemented.
+
+          * created: date and time when the link was created and tracking
+          began.
+
+          * clicks: number of click-through since creation.
+
+      * Extra columns will have no effect.
+
+Options:
+  --gsheet <url>                  URL to publicly readable Google Spreadsheet,
+                                  including sheet ID gid  [required]
+  --rebrandly-api-key <string>    API key for Rebrandly  [required]
+  -d, --domain-name <example.com>
+                                  Shortlink domain on Rebrandly  [required if
+                                  multiple domains on account]
+  -y, --yes                       Skip confirmation prompts
+  -d, --debug                     Show full debug output
+  --noop                          Skip API calls that change/destroy data
+  -h, --help                      Show this message and exit.
+```
+
+Runs nightly at 4am ET.
 
 ### `send_monthly_project_email.py`
 
