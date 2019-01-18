@@ -122,7 +122,7 @@ Options:
   -h, --help                    Show this message and exit.
 ```
 
-Runs nightly.
+Runs nightly at 4am ET.
 
 ### `gsheet2shortlinks.py`
 
@@ -169,7 +169,7 @@ Options:
   -h, --help                      Show this message and exit.
 ```
 
-WIP: Runs nightly.
+Runs nightly at 4am ET.
 
 ### `send_monthly_project_email.py`
 
