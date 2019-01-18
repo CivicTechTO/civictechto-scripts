@@ -1,5 +1,6 @@
 import click
 import csv
+from html.parser import HTMLParser
 import json
 import pprint
 import re
@@ -32,6 +33,25 @@ def lookup_link(links=[], slashtag=''):
     else:
         return None
 
+# See: https://stackoverflow.com/a/36650753/504018
+class TitleParser(HTMLParser):
+    # Customized: self.found_once ensures we only grab the first tag, as some
+    # modern single-page application framewords seem to have multiple.
+    # (whatever Meetup.com uses)
+    def __init__(self):
+        HTMLParser.__init__(self)
+        self.match = False
+        self.found_already = False
+        self.title = ''
+
+    def handle_starttag(self, tag, attributes):
+        self.match = True if tag == 'title' else False
+
+    def handle_data(self, data):
+        if self.match and not self.found_already:
+            self.found_already = True
+            self.title = data
+            self.match = False
 
 @click.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--gsheet',
@@ -165,16 +185,24 @@ def gsheet2rebrandly(rebrandly_api_key, gsheet, domain_name, yes, debug, noop):
     for row in reader:
         # TODO: If destination_url empty, delete link.
         # TODO: Deal with error when editing trashed link.
+
+        # Extract page title after redirects.
+        r = requests.get(row['destination_url'], allow_redirects=True)
+        parser = TitleParser()
+        parser.feed(r.content.decode('utf-8'))
         payload = {
+            'slashtag': row['slashtag'],
+            # Don't use url with redirect resolution, because permissioned
+            # pages (like Google Docs) will redirect to login page.
             'destination': row['destination_url'],
+            'title': parser.title,
         }
+        if debug: click.echo('>>> resolved as: ' + pprint.pformat(payload))
         link = lookup_link(links, row['slashtag'])
         if link:
-            # TODO: Hit page to get real title.
             if noop:
                 pass
             else:
-                payload['title'] = link['title']
                 r = requests.post('https://api.rebrandly.com/v1/links/'+link['id'],
                                   data=json.dumps(payload),
                                   headers={
@@ -184,6 +212,7 @@ def gsheet2rebrandly(rebrandly_api_key, gsheet, domain_name, yes, debug, noop):
                 if r.status_code != requests.codes.ok:
                     click.echo(pprint.pformat(r.__dict__))
                     raise click.Abort()
+                if debug: click.echo('>>> ' + pprint.pformat(r.json()))
             click.echo('Updated shortlink: '+row['slashtag'])
         else:
             if noop:
@@ -200,6 +229,7 @@ def gsheet2rebrandly(rebrandly_api_key, gsheet, domain_name, yes, debug, noop):
                 if r.status_code != requests.codes.ok:
                     click.echo(pprint.pformat(r))
                     raise click.Abort()
+                if debug: click.echo('>>> ' + pprint.pformat(r.json()))
             click.echo('Created shortlink: '+row['slashtag'])
 
     if noop: click.echo('Command exited no-op mode without creating/updating any data.')
