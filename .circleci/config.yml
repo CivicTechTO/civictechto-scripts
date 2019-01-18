@@ -216,7 +216,7 @@ jobs:
           command: |
             pipenv sync --dev
             pipenv run python gsheet2shortlinks.py --yes \
-              --domain "link.civictech.ca" \
+              --domain-name "link.civictech.ca" \
               --gsheet "https://docs.google.com/spreadsheets/d/1LCVxEXuv70R-NozOwhNxZFtTZUmn1FLMPVD5wgIor9o/edit#gid=776462093"
 
   # Doesn't yet run in workflow
