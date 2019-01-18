@@ -43,7 +43,7 @@ workflows:
   post_hacknight:
     jobs:
       - notify_slack_pitches
-      - backup_trello
+      #- backup_trello
       - save_pitch_data
     triggers:
       - schedule:
@@ -98,22 +98,20 @@ jobs:
 
       - restore_cache: &restore_cache
           keys:
-          - v1-dependencies-{{ checksum "requirements.txt" }}
+          - cache-{{ checksum "Pipfile.lock" }}
           # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
+          - cache-
 
       - run: &install_dependencies
           name: install dependencies
           command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            # When fetching package from new git repo, use (w)ipe action
-            pip install -r requirements.txt --exists-action w
+            pipenv sync --dev
 
       - save_cache: &save_cache
+          key: cache-{{ checksum "Pipfile.lock" }}
           paths:
-            - ./venv
-          key: v1-dependencies-{{ checksum "requirements.txt" }}
+            - ~/.local
+            - ~/.cache
 
   reset_pitches:
     <<: *default_job
@@ -126,8 +124,7 @@ jobs:
       - run:
           name: run script
           command: |
-            . venv/bin/activate
-            python3 clean_pitch_list.py
+            pipenv run python clean_pitch_list.py
 
   backup_trello:
     <<: *default_job
@@ -140,8 +137,7 @@ jobs:
       - run:
           name: run script
           command: |
-            . venv/bin/activate
-            #python3 backup_trello.py
+            pipenv run python backup_trello.py
 
   save_pitch_data:
     <<: *default_job
@@ -154,8 +150,7 @@ jobs:
       - run:
           name: run script
           command: |
-            . venv/bin/activate
-            python3 update_pitch_csv.py
+            pipenv run python update_pitch_csv.py
 
   notify_slack_pitches:
     <<: *default_job
@@ -168,8 +163,7 @@ jobs:
       - run:
           name: run script
           command: |
-            . venv/bin/activate
-            python3 notify_slack_pitches.py
+            pipenv run python notify_slack_pitches.py
 
   notify_slack_roles:
     <<: *default_job
@@ -182,8 +176,7 @@ jobs:
       - run:
           name: run script
           command: |
-            . venv/bin/activate
-            python3 notify_slack_roles.py
+            pipenv run python notify_slack_roles.py
 
   update_meetup:
     <<: *default_job
@@ -197,7 +190,6 @@ jobs:
           name: run script
           # Meetup key set as envvar CTTO_MEETUP_API_KEY
           command: |
-            pipenv sync --dev
             pipenv run python gsheet2meetup.py --yes \
               --meetup-group-slug "Civic-Tech-Toronto" \
               --gsheet "https://docs.google.com/spreadsheets/d/1-p0CyUMC0nqrEQNc6Yikd2vg033GoChSWR8rFKFxfgU/edit#gid=1209202081"
@@ -214,7 +206,6 @@ jobs:
           name: run script
           # Rebrandly key set as envvar CTTO_REBRANDLY_API_KEY
           command: |
-            pipenv sync --dev
             pipenv run python gsheet2shortlinks.py --yes \
               --domain-name "link.civictech.ca" \
               --gsheet "https://docs.google.com/spreadsheets/d/1LCVxEXuv70R-NozOwhNxZFtTZUmn1FLMPVD5wgIor9o/edit#gid=776462093"
@@ -231,5 +222,4 @@ jobs:
       - run:
           name: run script
           command: |
-            . venv/bin/activate
-            python3 send_monthly_project_email.py
+            pipenv run python send_monthly_project_email.py
