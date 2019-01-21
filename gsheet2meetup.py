@@ -284,6 +284,13 @@ def gsheet2meetup(meetup_api_key, gsheet, meetup_group_slug, yes, debug, noop):
                         click.echo('>>> Created photo:')
                         click.echo(pprint.pformat(image_obj.__dict__))
 
+                # Ensure fields with errors are never sync'd.
+                # For rationale of copy, see: https://stackoverflow.com/a/11941855/504018
+                for k, v in dict(event_data).items():
+                    if v == '#NAME?':
+                        click.echo("WARNING: Setting of field '{}' was skipped, as CSV cell had '#NAME?' error.".format(k))
+                        del event_data[k]
+
                 # TODO: Set to zero to remove ID if none provided. (Or set default.)
                 event_data['featured_photo_id'] = photo_id
 
