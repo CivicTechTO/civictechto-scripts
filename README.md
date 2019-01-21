@@ -18,6 +18,7 @@ tasks. Many of them run automatically each week.
   - [`notify_slack_roles.py`](#notify_slack_rolespy)
   - [`gsheet2meetup.py`](#gsheet2meetuppy)
   - [`gsheet2shortlinks.py`](#gsheet2shortlinkspy)
+  - [`grant_gdrive_perms.py`](#grant_gdrive_permspy)
   - [`send_monthly_project_email.py`](#send_monthly_project_emailpy)
   - [`next-meetup` command](#next-meetup-command)
   - [`upload2gdrive` command](#upload2gdrive-command)
@@ -263,6 +264,38 @@ Options:
 ```
 
 This command runs in conjunction with other tasks/scripts.
+
+### `grant_gdrive_perms.py`
+
+This allows granting edit/view permissions on a set of Google Drive
+resources (files or folders), based on membership within a Slack
+public/private channel.
+
+```
+$ python tasks/grant_gdrive_perms.py --help
+
+Usage: grant_gdrive_perms.py [OPTIONS]
+
+  Grant Google Docs file permissions based on Slack channel membership.
+
+  Note: The Slack API token must be issued by a user/bot with access to the
+  --slack-channel provided.
+
+Options:
+  --slack-token <string>        API token for Slack (user or bot).  [required]
+  --slack-channel <string>      Channel name or identifier. Example: #my-chan,
+                                my-chan, C1234ABYZ, G1234ABYZ  [required]
+  --google-creds <filepath>     Credentials file for Google API access
+                                [required]
+  --permission-file <filepath>  Path to plaintext config file listing docs and
+                                permissions  [required]
+  -y, --yes                     Skip confirmation prompts
+  -d, --debug                   Show full debug output
+  --noop                        Skip API calls that change/destroy data
+  -h, --help                    Show this message and exit.
+```
+
+WIP: Runs nightly at 4am ET.
 
 ### `send_monthly_project_email.py`
 

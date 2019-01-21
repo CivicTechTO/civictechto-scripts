@@ -33,7 +33,7 @@ CONTEXT_SETTINGS = dict(help_option_names=['--help', '-h'])
               help='Skip API calls that change/destroy data',
               is_flag=True)
 def grant_gdrive_perms(slack_token, slack_channel, google_creds, permission_file, yes, debug, noop):
-    """Create/update Rebrandly shortlinks from a Google Docs spreadsheet.
+    """Grant Google Docs file permissions based on Slack channel membership.
 
     Note: The Slack API token must be issued by a user/bot with access to the --slack-channel provided.
     """
