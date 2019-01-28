@@ -15,7 +15,9 @@ import urllib
 
 
 CONTEXT_SETTINGS = dict(help_option_names=['--help', '-h'])
-GSHEET_URL_RE = re.compile('https://docs.google.com/spreadsheets/d/([\w_-]+)/(?:edit|view)(?:#gid=([0-9]+))?')
+GSHEET_URL_RE = re.compile('https://docs.google.com/(?:spreadsheets|document)/d/([\w_-]+)/(?:edit|view)(?:#gid=([0-9]+))?')
+# Epoch time used as a cache buster for urls like event description template.
+SCRIPT_TIME = int(time.time())
 
 def parse_gsheet_url(url):
     matches = GSHEET_URL_RE.match(url)
@@ -31,6 +33,15 @@ def parse_gsheet_url(url):
         worksheet_id = 0
 
     return spreadsheet_key, worksheet_id
+
+def add_cachebuster(url):
+    url_data = urllib.parse.urlsplit(url)
+    query_data = urllib.parse.parse_qs(url_data.query)
+    # Add to prevent fetching of cached CSV (eg. on GitHub)
+    query_data.update({'cachebuster': SCRIPT_TIME})
+    query_string = '&'.join(['{}={}'.format(k, v) for k, v in query_data.items()])
+    url_data = url_data._replace(query=query_string)
+    return urllib.parse.urlunsplit(url_data)
 
 class dotdefaultdict(defaultdict):
     """dot.notation access to default dictionary attributes"""
@@ -165,9 +176,6 @@ def gsheet2meetup(meetup_api_key, gsheet, meetup_group_slug, yes, verbose, debug
     })
     meetup_events = response.results
 
-    # Epoch time used as a cache buster for urls like event description template.
-    script_time = int(time.time())
-
     # Iterate through CSV content and perform actions on data
     reader = csv.DictReader(csv_content, delimiter=',')
     for row in reader:
@@ -247,7 +255,7 @@ def gsheet2meetup(meetup_api_key, gsheet, meetup_group_slug, yes, verbose, debug
 
             # Set event description from template
             if row['template_url']:
-                template_url = "{url}?r={cachebuster}".format(url=row['template_url'], cachebuster=script_time)
+                template_url = add_cachebuster(row['template_url'])
                 r = requests.get(template_url)
                 desc_tmpl = r.text
                 # Pass spreadsheet dict into template func, do token replacement via header names.
