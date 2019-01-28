@@ -124,7 +124,7 @@ description ([sample][desc_template]).
    [desc_template]: examples/meetup_event_template.txt
 
 ```
-$ python gsheet2meetup.py --help
+$ python scripts/gsheet2meetup.py --help
 
 Usage: gsheet2meetup.py [OPTIONS]
 

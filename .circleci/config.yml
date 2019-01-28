@@ -190,7 +190,7 @@ jobs:
           name: run script
           # Meetup key set as envvar CTTO_MEETUP_API_KEY
           command: |
-            pipenv run python gsheet2meetup.py --yes \
+            pipenv run python scripts/gsheet2meetup.py --yes \
               --meetup-group-slug "Civic-Tech-Toronto" \
               --gsheet "https://docs.google.com/spreadsheets/d/1-p0CyUMC0nqrEQNc6Yikd2vg033GoChSWR8rFKFxfgU/edit#gid=1209202081"
 
