@@ -63,6 +63,9 @@ class dotdefaultdict(defaultdict):
 @click.option('--yes', '-y',
               help='Skip confirmation prompts',
               is_flag=True)
+@click.option('--verbose', '-v',
+              help='Show output for each action',
+              is_flag=True)
 @click.option('--debug', '-d',
               is_flag=True,
               help='Show full debug output',
@@ -70,7 +73,7 @@ class dotdefaultdict(defaultdict):
 @click.option('--noop',
               help='Skip API calls that change/destroy data',
               is_flag=True)
-def gsheet2meetup(meetup_api_key, gsheet, meetup_group_slug, yes, debug, noop):
+def gsheet2meetup(meetup_api_key, gsheet, meetup_group_slug, yes, verbose, debug, noop):
     """Create/update events of a Meetup.com group from a Google Docs spreadsheet.
 
     The following fields are available:
@@ -114,6 +117,7 @@ def gsheet2meetup(meetup_api_key, gsheet, meetup_group_slug, yes, debug, noop):
     if noop: click.echo('>>> No-op mode: enabled (No operations affecting data will be run)')
 
     ### Fetch spreadsheet
+    if verbose: click.echo('Fetching event information...')
 
     spreadsheet_key, worksheet_id = parse_gsheet_url(gsheet)
     CSV_URL_TEMPLATE = 'https://docs.google.com/spreadsheets/d/{key}/export?format=csv&id={key}&gid={id}'
@@ -137,7 +141,7 @@ def gsheet2meetup(meetup_api_key, gsheet, meetup_group_slug, yes, debug, noop):
 
     ### Output confirmation to user
 
-    if not yes:
+    if verbose or not yes:
         confirmation_details = """\
             We are using the following configuration:
               * Meetup Group:            {group}
@@ -147,6 +151,8 @@ def gsheet2meetup(meetup_api_key, gsheet, meetup_group_slug, yes, debug, noop):
               # Get from the file download name.
         confirmation_details = confirmation_details.format(group=meetup_group_slug, url=gsheet, name=filename)
         click.echo(textwrap.dedent(confirmation_details))
+
+    if not yes:
         click.confirm('Do you want to continue?', abort=True)
 
     mclient = meetup.api.Client(meetup_api_key)
@@ -173,8 +179,15 @@ def gsheet2meetup(meetup_api_key, gsheet, meetup_group_slug, yes, debug, noop):
         # Ignore non-sync'd or past events
         is_truthy = lambda s: s.lower() in ['x', 'y', 'yes', 'true', 't', '1']
         is_past = lambda d: d < datetime.datetime.now()
-        if not is_truthy(row['do_update']) or is_past(gevent_start):
+
+        if is_past(gevent_start):
             continue
+
+        if not is_truthy(row['do_update']):
+            if verbose:
+                click.echo('Skipped {} event (re: do_update field)'.format(row['date']))
+            continue
+
         get_mevent_start = lambda ev: datetime.datetime.fromtimestamp(ev.get('time')/1000)
         [this_event] = [ev for ev in meetup_events if get_mevent_start(ev).date() == gevent_start.date()]
 
@@ -189,7 +202,8 @@ def gsheet2meetup(meetup_api_key, gsheet, meetup_group_slug, yes, debug, noop):
             is_event_managed = lambda ev: ev['simple_html_description'].endswith('**')
             if not is_event_managed(this_event):
                 skip_event_msg = 'Event on {date} found, but not set to be managed. To manage, add "**" to last line of event description.'
-                click.echo(skip_event_msg.format(date=row['date']))
+                if verbose:
+                    click.echo(skip_event_msg.format(date=row['date']))
                 continue
 
             if debug:
@@ -210,8 +224,8 @@ def gsheet2meetup(meetup_api_key, gsheet, meetup_group_slug, yes, debug, noop):
 
             # If set to ready, and not yet announced.
             if is_truthy(row['ready_to_announce']) and not this_event['announced']:
-                click.echo('Announcing meetup: ' + row['title_full'])
                 if not yes:
+                    click.echo('Meetup: ' + row['title_full'])
                     click.confirm('Are you sure you wish to announce?', abort=True)
                 # TODO: Add some check for days prior to event.
                 event_data['announce'] = True
@@ -338,6 +352,11 @@ def gsheet2meetup(meetup_api_key, gsheet, meetup_group_slug, yes, debug, noop):
                 if debug:
                     click.echo('>>> Updated event:')
                     click.echo(pprint.pformat(response.__dict__))
+
+            if verbose:
+                click.echo('UPDATED {} event: {}'.format(row['date'], row['title_full']))
+                if event_data.get('announce'):
+                    click.echo('--- ANNOUNCED')
 
     if noop: click.echo('Command exited no-op mode without creating/updating any events.')
 
