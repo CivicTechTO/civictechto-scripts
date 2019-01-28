@@ -11,7 +11,6 @@ tasks. Many of them run automatically each week.
 
 - [About This Repo](#about-these-automated-scripts)
 - [Technologies Used](#technologies-used)
-- [Local Development](#computer-local-development)
 - **Scripts**
   - [`clean_pitch_list.py`](#clean_pitch_listpy)
   - [`update_pitch_csv.py`](#update_pitch_csvpy)
@@ -20,6 +19,7 @@ tasks. Many of them run automatically each week.
   - [`gsheet2meetup.py`](#gsheet2meetuppy)
   - [`gsheet2shortlinks.py`](#gsheet2shortlinkspy)
   - [`send_monthly_project_email.py`](#send_monthly_project_emailpy)
+- [Local Development](#computer-local-development)
 
 ## About these Automated Scripts
 
@@ -43,6 +43,12 @@ Here's a diagram showing how project pitch information flows into, through and o
   tool that we [use to track breakout groups][trello-board].
 
 ## :computer: Local Development
+
+These scripts are designed to run in the cloud, using code from the
+`master` branch on GitHub. However, they can also be run on a local
+workstation.  Further, contributions should be tested locally before
+pushing changes to repo, as changes to existing scripts on `master` will
+then come into effect.
 
 ### Setup
 
