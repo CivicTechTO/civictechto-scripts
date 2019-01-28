@@ -1,0 +1,1 @@
+- Improved output of gsheet2meetup script when actions are taken.
