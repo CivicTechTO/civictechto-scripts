@@ -15,12 +15,12 @@ import urllib
 
 
 CONTEXT_SETTINGS = dict(help_option_names=['--help', '-h'])
-GSHEET_URL_RE = re.compile('https://docs.google.com/(?:spreadsheets|document)/d/([\w_-]+)/(?:edit|view)(?:#gid=([0-9]+))?')
+GDOC_URL_RE = re.compile('https://docs.google.com/(?:spreadsheets|document)/d/([\w_-]+)/(?:edit|view)(?:#gid=([0-9]+))?')
 # Epoch time used as a cache buster for urls like event description template.
 SCRIPT_TIME = int(time.time())
 
-def parse_gsheet_url(url):
-    matches = GSHEET_URL_RE.match(url)
+def parse_gdoc_url(url):
+    matches = GDOC_URL_RE.match(url)
 
     # Raise error if key not parseable.
     spreadsheet_key = matches.group(1)
@@ -35,13 +35,26 @@ def parse_gsheet_url(url):
     return spreadsheet_key, worksheet_id
 
 def add_cachebuster(url):
-    url_data = urllib.parse.urlsplit(url)
-    query_data = urllib.parse.parse_qs(url_data.query)
+    url_data = alturlsplit(url)
+    query_data = url_data.query
     # Add to prevent fetching of cached CSV (eg. on GitHub)
     query_data.update({'cachebuster': SCRIPT_TIME})
+    url_data = url_data._replace(query=query_data)
+    url = alturlunsplit(url_data)
+    return url
+
+def alturlsplit(url):
+    url_data = urllib.parse.urlsplit(url)
+    query_data = urllib.parse.parse_qs(url_data.query)
+    url_data = url_data._replace(query=query_data)
+    return url_data
+
+def alturlunsplit(url_data):
+    query_data = url_data.query
     query_string = '&'.join(['{}={}'.format(k, v) for k, v in query_data.items()])
     url_data = url_data._replace(query=query_string)
-    return urllib.parse.urlunsplit(url_data)
+    url = urllib.parse.urlunsplit(url_data)
+    return url
 
 class dotdefaultdict(defaultdict):
     """dot.notation access to default dictionary attributes"""
@@ -130,7 +143,7 @@ def gsheet2meetup(meetup_api_key, gsheet, meetup_group_slug, yes, verbose, debug
     ### Fetch spreadsheet
     if verbose: click.echo('Fetching event information...')
 
-    spreadsheet_key, worksheet_id = parse_gsheet_url(gsheet)
+    spreadsheet_key, worksheet_id = parse_gdoc_url(gsheet)
     CSV_URL_TEMPLATE = 'https://docs.google.com/spreadsheets/d/{key}/export?format=csv&id={key}&gid={id}'
     csv_url = CSV_URL_TEMPLATE.format(key=spreadsheet_key, id=worksheet_id)
     # Fetch and parse shortlink CSV.
@@ -256,8 +269,21 @@ def gsheet2meetup(meetup_api_key, gsheet, meetup_group_slug, yes, verbose, debug
             # Set event description from template
             if row['template_url']:
                 template_url = add_cachebuster(row['template_url'])
+                url_data = alturlsplit(template_url)
+                if url_data.netloc == 'docs.google.com' and 'document' in url_data.path:
+                    gdoc_key, _ = parse_gdoc_url(template_url)
+                    TXT_URL_TEMPLATE = 'https://docs.google.com/document/d/{key}/export?format=txt'
+                    template_url = TXT_URL_TEMPLATE.format(key=gdoc_key)
                 r = requests.get(template_url)
-                desc_tmpl = r.text
+                # Get rid of byte order mark
+                # See: https://stackoverflow.com/a/8898439/504018
+                desc_tmpl = r.content.decode('utf-8-sig')
+                # Linux newlines
+                desc_tmpl = desc_tmpl.replace("\r\n", "\n")
+                # TODO: Strip out comments.
+                # When a doc is publicly VIEWABLE and not editable, comments aren't included.
+                # But when comments are possible, downloading the file includes them.
+
                 # Pass spreadsheet dict into template func, do token replacement via header names.
                 desc = pystache.render(desc_tmpl, row)
                 # Add "**" to end of description to indicate this event as managed.
