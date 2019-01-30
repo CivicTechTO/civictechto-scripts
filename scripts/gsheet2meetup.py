@@ -291,6 +291,9 @@ def gsheet2meetup(meetup_api_key, gsheet, meetup_group_slug, yes, verbose, debug
                 event_data['description'] = desc
 
             if row['image_url']:
+                # TODO: For Google Drive links, convert to direct link.
+                # From: https://drive.google.com/open?id=1aVg0AODDtNl97Ntarm53KibO8oMOHVIw (shareable link)
+                # To: https://drive.google.com/uc?id=1aVg0AODDtNl97Ntarm53KibO8oMOHVIw (image bytes)
                 # Download image from url.
                 _, image_path = tempfile.mkstemp()
                 r = requests.get(row['image_url'], allow_redirects=True)
@@ -335,7 +338,7 @@ def gsheet2meetup(meetup_api_key, gsheet, meetup_group_slug, yes, verbose, debug
                 # Ensure fields with errors are never sync'd.
                 # For rationale of copy, see: https://stackoverflow.com/a/11941855/504018
                 for k, v in dict(event_data).items():
-                    if v == '#NAME?':
+                    if '#NAME?' in v:
                         click.echo("WARNING: Setting of field '{}' was skipped, as CSV cell had '#NAME?' error.".format(k))
                         del event_data[k]
 
