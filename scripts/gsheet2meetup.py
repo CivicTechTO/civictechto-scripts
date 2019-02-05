@@ -285,9 +285,17 @@ def gsheet2meetup(meetup_api_key, gsheet, meetup_group_slug, yes, verbose, debug
                 desc_tmpl = r.content.decode('utf-8-sig')
                 # Linux newlines
                 desc_tmpl = desc_tmpl.replace("\r\n", "\n")
-                # TODO: Strip out comments.
-                # When a doc is publicly VIEWABLE and not editable, comments aren't included.
-                # But when comments are possible, downloading the file includes them.
+
+                ## DEAL WITH GOOGLE DOCS COMMENTS IN TEMPLATE
+
+                # Strip out comments from end, after last footnote.
+                matches = re.finditer('\[a\]', desc_tmpl)
+                last_index = list(matches)[-1].start()
+                desc_tmpl = desc_tmpl[:last_index]
+                # Strip remaining newlines between text and comments.
+                desc_tmpl = desc_tmpl.strip()
+                # Remove footnote markers from within text.
+                desc_tmpl = re.sub(r'\[[a-z]{1,2}\]', '', desc_tmpl)
 
                 # Pass spreadsheet dict into template func, do token replacement via header names.
                 desc = pystache.render(desc_tmpl, row)
