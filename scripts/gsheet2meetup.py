@@ -338,7 +338,7 @@ def gsheet2meetup(meetup_api_key, gsheet, meetup_group_slug, yes, verbose, debug
                 # Ensure fields with errors are never sync'd.
                 # For rationale of copy, see: https://stackoverflow.com/a/11941855/504018
                 for k, v in dict(event_data).items():
-                    if '#NAME?' in v:
+                    if '#NAME?' in str(v):
                         click.echo("WARNING: Setting of field '{}' was skipped, as CSV cell had '#NAME?' error.".format(k))
                         del event_data[k]
 
