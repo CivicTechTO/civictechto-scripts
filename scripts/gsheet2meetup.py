@@ -199,7 +199,12 @@ def gsheet2meetup(meetup_api_key, gsheet, meetup_group_slug, yes, verbose, debug
         gevent_start = gevent_start + datetime.timedelta(hours=int(h), minutes=int(m))
         # Ignore non-sync'd or past events
         is_truthy = lambda s: s.lower() in ['x', 'y', 'yes', 'true', 't', '1']
-        is_past = lambda d: d < datetime.datetime.now()
+        # We're a little generous with the definition of "past", since the
+        # script is not timezone-aware. Since it might run in the cloud
+        # sometime that is one day offset, we pad a day. We only update
+        # "upcoming" events on Meetup.com, so any rows for "past" events (which
+        # aren't editable) won't be caught in this.
+        is_past = lambda d: d < datetime.datetime.now()-datetime.timedelta(days=1)
 
         if is_past(gevent_start):
             continue
