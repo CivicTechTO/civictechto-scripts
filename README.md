@@ -272,7 +272,7 @@ resources (files or folders), based on membership within a Slack
 public/private channel.
 
 ```
-$ python tasks/grant_gdrive_perms.py --help
+$ python scripts/grant_gdrive_perms.py --help
 
 Usage: grant_gdrive_perms.py [OPTIONS]
 
