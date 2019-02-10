@@ -82,7 +82,7 @@ def grant_gdrive_perms(slack_token, slack_channel, google_creds, permission_file
     click.echo('Fetching emails for members of channel {}'.format(channel_name))
     res = sclient.api_call(
         'conversations.members',
-        channel='G08V58H6Y',
+        channel=channel['id'],
     )
     if not res['ok']:
         raise click.ClickException('Slack API error - ' + res['error'])
