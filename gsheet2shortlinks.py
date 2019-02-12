@@ -8,6 +8,8 @@ import requests
 import textwrap
 import urllib
 
+from commands.common import common_params
+
 CONTEXT_SETTINGS = dict(help_option_names=['--help', '-h'])
 GSHEET_URL_RE = re.compile('https://docs.google.com/spreadsheets/d/([\w_-]+)/(?:edit|view)(?:#gid=([0-9]+))?')
 
@@ -67,16 +69,8 @@ class TitleParser(HTMLParser):
               envvar='CTTO_SHORTLINK_DOMAIN',
               help='Shortlink domain on Rebrandly  [required if multiple domains on account]',
               metavar='<example.com>')
-@click.option('--yes', '-y',
-              help='Skip confirmation prompts',
-              is_flag=True)
-@click.option('--debug', '-d',
-              is_flag=True,
-              help='Show full debug output',
-              default=False)
-@click.option('--noop',
-              help='Skip API calls that change/destroy data',
-              is_flag=True)
+@common_params
+# TODO: Accomodate --verbose flag.
 def gsheet2rebrandly(rebrandly_api_key, gsheet, domain_name, yes, debug, noop):
     """Create/update Rebrandly shortlinks from a Google Docs spreadsheet.
 
