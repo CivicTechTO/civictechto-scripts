@@ -191,6 +191,29 @@ Options:
 
 Runs nightly at 4am ET.
 
+### `upload2gdrive` command
+
+This command uploads local files to a Google Drive folder.
+
+```
+$ pipenv run python cli.py upload2gdrive --help
+
+Usage: cli.py upload2gdrive [OPTIONS] FILE
+
+Options:
+  -f, --gdrive-folder <url/id>  Google Drive folder to upload file into. (URL
+                                or folder ID)  [required]
+  -c, --google-creds <file>     JSON keyfile for a Google service account.
+                                [required]
+  -y, --yes                     Skip confirmation prompts
+  -v, --verbose                 Show output for each action
+  -d, --debug                   Show full debug output
+  --noop                        Skip API calls that change/destroy data
+  -h, --help                    Show this message and exit.
+```
+
+This command runs in conjunction with other tasks/scripts.
+
 ### `send_monthly_project_email.py`
 
 This take data from the [historical dataset of breakout
