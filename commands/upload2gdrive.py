@@ -30,6 +30,7 @@ common_params = common.common_params
               metavar='<file>')
 @common_params
 def upload2gdrive(file, gdrive_folder, google_creds, yes, verbose, debug, noop):
+    """Upload local files to a Google Drive folder."""
     folder_id = gdrive_folder
     json_bytes = b''
     while True:

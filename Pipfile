@@ -10,6 +10,7 @@ gspread = "*"
 meetup-api = {editable = true, ref = "develop", git = "https://github.com/patcon/meetup-api.git"}
 "oauth2client" = "*"
 py-trello = "*"
+PyDrive = "*"
 pystache = "*"
 python-dotenv = "*"
 requests = "*"
