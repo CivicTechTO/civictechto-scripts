@@ -6,17 +6,21 @@ name = "pypi"
 [packages]
 click = "*"
 gspread = "*"
-"mailchimp3" = "*"
+mailchimp3 = "*"
 meetup-api = {editable = true, ref = "develop", git = "https://github.com/patcon/meetup-api.git"}
-"oauth2client" = "*"
+oauth2client = "*"
 py-trello = "*"
 PyDrive = "*"
 pystache = "*"
 python-dotenv = "*"
 requests = "*"
 slackclient = "*"
-"Jinja2" = "*"
+Jinja2 = "*"
 PyGithub = "*"
+
+anki-meetup-memorizer = {editable = true, ref = "master", git = "https://github.com/civictechto/anki-meetup-memorizer.git"}
+# Required for anki to work as library
+decorator = "*"
 
 [dev-packages]
 

@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "4f1d5a9006098876fb8adbaeaa2e4b2c330a4b9f479e2fd46202b6796b9eaccd"
+            "sha256": "f7d8714dabd34955e8cd4fc142cb967d3f183edb3df168149aae500fa8e8203c"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -16,6 +16,11 @@
         ]
     },
     "default": {
+        "anki-meetup-memorizer": {
+            "editable": true,
+            "git": "https://github.com/civictechto/anki-meetup-memorizer.git",
+            "ref": "629b789dd7839687f38670ee15f24f4d508ff317"
+        },
         "cachetools": {
             "hashes": [
                 "sha256:219b7dc6024195b6f2bc3d3f884d1fef458745cd323b04165378622dcc823852",
@@ -44,6 +49,14 @@
             ],
             "index": "pypi",
             "version": "==7.0"
+        },
+        "decorator": {
+            "hashes": [
+                "sha256:33cd704aea07b4c28b3eb2c97d288a06918275dac0ecebdaf1bc8a48d98adb9e",
+                "sha256:cabb249f4710888a2fc0e13e9a16c343d932033718ff62e1e9bc93a9d3a9122b"
+            ],
+            "index": "pypi",
+            "version": "==4.3.2"
         },
         "deprecated": {
             "hashes": [
