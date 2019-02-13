@@ -19,6 +19,8 @@ tasks. Many of them run automatically each week.
   - [`gsheet2meetup.py`](#gsheet2meetuppy)
   - [`gsheet2shortlinks.py`](#gsheet2shortlinkspy)
   - [`send_monthly_project_email.py`](#send_monthly_project_emailpy)
+  - [`next-meetup` command](#next-meetup-command)
+  - [`upload2gdrive` command](#upload2gdrive-command)
 - [Local Development](#computer-local-development)
 
 ## About these Automated Scripts
@@ -205,6 +207,36 @@ Options:
                                 or folder ID)  [required]
   -c, --google-creds <file>     JSON keyfile for a Google service account.
                                 [required]
+  -y, --yes                     Skip confirmation prompts
+  -v, --verbose                 Show output for each action
+  -d, --debug                   Show full debug output
+  --noop                        Skip API calls that change/destroy data
+  -h, --help                    Show this message and exit.
+```
+
+This command runs in conjunction with other tasks/scripts.
+
+### `next-meetup` command
+
+```
+$ pipenv run python cli.py next-meetup --help
+
+Usage: cli.py next-meetup [OPTIONS]
+
+  Get the next event for a given Meetup group.
+
+  * Can be filtered based on event title. * Can echo any event fields from
+  the Meetup API response.
+
+Options:
+  --meetup-api-key <string>     API key for member of leadership team
+                                [required]
+  --meetup-group-slug <string>  Meetup group name from URL  [required]
+  --filter <string|regex>       String or pattern to match on event title, for
+                                seeking next event. Case-insensitive. Default:
+                                None.
+  --fields <one,two>            Comma-separated list of event fields to
+                                return. Default: event_url
   -y, --yes                     Skip confirmation prompts
   -v, --verbose                 Show output for each action
   -d, --debug                   Show full debug output
