@@ -31,6 +31,10 @@ common_params = common.common_params
 @common_params
 def upload2gdrive(file, gdrive_folder, google_creds, yes, verbose, debug, noop):
     """Upload local files to a Google Drive folder."""
+    click.echo("Preparing to upload file to Google Drive...", err=True)
+    if noop:
+        raise "Not yet implemented"
+    # TODO: Allow url or folder ID
     folder_id = gdrive_folder
     json_bytes = b''
     while True:
