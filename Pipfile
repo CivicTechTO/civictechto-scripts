@@ -19,8 +19,6 @@ Jinja2 = "*"
 PyGithub = "*"
 
 anki-meetup-memorizer = {editable = true, ref = "master", git = "https://github.com/civictechto/anki-meetup-memorizer.git"}
-# Required for anki to work as library
-decorator = "*"
 
 [dev-packages]
 

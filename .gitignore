@@ -1,3 +1,4 @@
 .env
 *.csv
 service-key.json
+outputs/
