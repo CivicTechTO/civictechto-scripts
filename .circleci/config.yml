@@ -21,6 +21,7 @@ workflows:
   day_before:
     jobs:
       - notify_slack_roles
+      - create_attendee_flashcards
     triggers:
       - schedule:
           # Every Mon evening at 6pm ET
@@ -209,6 +210,32 @@ jobs:
             pipenv run python gsheet2shortlinks.py --yes \
               --domain-name "link.civictech.ca" \
               --gsheet "https://docs.google.com/spreadsheets/d/1LCVxEXuv70R-NozOwhNxZFtTZUmn1FLMPVD5wgIor9o/edit#gid=776462093"
+
+  # Doesn't yet run in workflow
+  create_attendee_flashcards:
+    <<: *default_job
+    steps:
+      - checkout
+      - run: {<<: *decrypt_files}
+      - restore_cache: {<<: *restore_cache}
+      - run: {<<: *install_dependencies}
+      - save_cache: {<<: *save_cache}
+      - run:
+          name: run script
+          # Meetup API key set as envvar CTTO_MEETUP_API_KEY
+          command: |
+            pipenv run python cli.py next-meetup \
+              --meetup-group-slug Civic-Tech-Toronto \
+              --filter "civic hacknight" > .output
+            MEETUP_EVENT_URL=$(cat .output | grep event_url | cut -d' ' -f2)
+
+            ANKI_MEETUP_API_KEY=$CTTO_MEETUP_API_KEY \
+              pipenv run anki-meetup-memorizer "$MEETUP_EVENT_URL" --yes --verbose > .output
+            APKG_FILE=$(cat .output | grep output_filepath | cut -d' ' -f2)
+
+            pipenv run python cli.py upload2gdrive "$APKG_FILE" --yes --verbose \
+              --gdrive-folder "0B2riIxpG2GHERjFlRHYzTTJOa0E" \
+              --google-creds service-key.json
 
   # Doesn't yet run in workflow
   email_monthly_update:
