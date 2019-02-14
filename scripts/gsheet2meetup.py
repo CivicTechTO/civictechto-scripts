@@ -97,7 +97,7 @@ class dotdefaultdict(defaultdict):
 @click.option('--noop',
               help='Skip API calls that change/destroy data',
               is_flag=True)
-def gsheet2meetup(meetup_api_key, gsheet, meetup_group_slug, yes, verbose, debug, noop):
+def gsheet2meetup(meetup_api_key, gsheet, meetup_group_slug, yes, verbose, debug, noop, cautious=False):
     """Create/update events of a Meetup.com group from a Google Docs spreadsheet.
 
     The following fields are available:
@@ -226,7 +226,8 @@ def gsheet2meetup(meetup_api_key, gsheet, meetup_group_slug, yes, verbose, debug
             # Skip event if not ending in two asterisks "**".
             # We are using this string as a flag for which events to manage.
             is_event_managed = lambda ev: ev['simple_html_description'].endswith('**')
-            if not is_event_managed(this_event):
+            # TODO: Either add cautious flag or remove this code.
+            if cautious and not is_event_managed(this_event):
                 skip_event_msg = 'Event on {date} found, but not set to be managed. To manage, add "**" to last line of event description.'
                 if verbose:
                     click.echo(skip_event_msg.format(date=row['date']))
