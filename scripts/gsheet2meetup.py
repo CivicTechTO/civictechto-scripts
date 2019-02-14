@@ -375,6 +375,7 @@ def gsheet2meetup(meetup_api_key, gsheet, meetup_group_slug, yes, verbose, debug
                     [matched_venue] = [v for v in nearby_venues if v['name'] == row['venue_name']]
                     # TODO: Search partial match?
 
+                event_data['venue_id'] = venue['id']
                 # TODO: Fetch venue ID into spreadsheet? Might just be confusing.
 
             if row['hosts']:
