@@ -349,13 +349,6 @@ def gsheet2meetup(meetup_api_key, gsheet, meetup_group_slug, yes, verbose, debug
                         click.echo('>>> Created photo:')
                         click.echo(pprint.pformat(image_obj.__dict__))
 
-                # Ensure fields with errors are never sync'd.
-                # For rationale of copy, see: https://stackoverflow.com/a/11941855/504018
-                for k, v in dict(event_data).items():
-                    if '#NAME?' in str(v):
-                        click.echo("WARNING: Setting of field '{}' was skipped, as CSV cell had '#NAME?' error.".format(k))
-                        del event_data[k]
-
                 # TODO: Set to zero to remove ID if none provided. (Or set default.)
                 event_data['featured_photo_id'] = photo_id
 
@@ -394,6 +387,13 @@ def gsheet2meetup(meetup_api_key, gsheet, meetup_group_slug, yes, verbose, debug
                 # TODO: If 5 slots to used up, choose random organizers (based on criteria of recent attendance?)
                 host_ids = ','.join([str(m['member_id']) for m in host_profiles])
                 event_data['event_hosts'] = host_ids
+
+            # Ensure fields with errors are never sync'd.
+            # For rationale of copy, see: https://stackoverflow.com/a/11941855/504018
+            for k, v in dict(event_data).items():
+                if '#NAME?' in str(v):
+                    click.echo("WARNING {} event: Field '{}' had a error and its update was skipped.".format(row['date'], k))
+                    del event_data[k]
 
             if debug: click.echo(">>> Updating event with current properties:\n" + pprint.pformat(event_data))
             if noop:
