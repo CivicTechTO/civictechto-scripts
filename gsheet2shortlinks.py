@@ -71,7 +71,7 @@ class TitleParser(HTMLParser):
               metavar='<example.com>')
 @common_params
 # TODO: Accomodate --verbose flag.
-def gsheet2rebrandly(rebrandly_api_key, gsheet, domain_name, yes, debug, noop):
+def gsheet2rebrandly(rebrandly_api_key, gsheet, domain_name, yes, verbose, debug, noop):
     """Create/update Rebrandly shortlinks from a Google Docs spreadsheet.
 
     Here are some notes on spreadsheet columns:
