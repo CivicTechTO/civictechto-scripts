@@ -8,8 +8,78 @@ import pprint
 import re
 from slackclient import SlackClient
 
+
 CONTEXT_SETTINGS = dict(help_option_names=['--help', '-h'])
 GOOGLE_SCOPES = ['https://www.googleapis.com/auth/drive']
+CHAN_ID_RE = re.compile('^(G|C)[A-Z0-9-_]+$')
+
+class MySlackClient(SlackClient):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def get_channel(self, id_or_name):
+        if re.match(CHAN_ID_RE, id_or_name):
+            res = self.api_call(
+                'conversations.info',
+                channel=id_or_name,
+            )
+            if not res['ok']:
+                raise click.ClickException('Slack API error - ' + res['error'])
+
+            return channel
+        else:
+            # Strip the hash symbol from front
+            chan_name = id_or_name.replace('#', '')
+            res = self.api_call(
+                'conversations.list',
+                exclude_archived=True,
+                # TODO: Instead support pagination.
+                limit=1000,
+                types='public_channel,private_channel',
+            )
+            if not res['ok']:
+                raise click.ClickException('Slack API error - ' + res['error'])
+            channel = [c for c in res['channels'] if c['name'] == chan_name]
+            if not channel:
+                raise click.ClickException('Channel not found in team: ' + chan_name)
+
+            return channel[0]
+
+    def get_channel_member_ids(self, chan_id):
+        res = self.api_call(
+            'conversations.members',
+            channel=chan_id,
+        )
+        if not res['ok']:
+            raise click.ClickException('Slack API error - ' + res['error'])
+
+        member_ids = res['members']
+        return member_ids
+
+    def get_real_channel_members(self, chan_id):
+        member_ids = self.get_channel_member_ids(chan_id)
+        members = self.get_real_members(member_ids)
+        return members
+
+    def get_real_members(self, member_ids):
+        members = []
+        for mid in member_ids:
+            res = self.api_call(
+                'users.info',
+                user=mid
+            )
+            if not res['ok']:
+                raise click.ClickException('Slack API error - ' + res['error'])
+            user = res['user']
+            if user['is_bot']:
+                continue
+
+            if not user['profile'].get('email'):
+                continue
+
+            members.append(user)
+
+        return members
 
 @click.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--slack-token',
@@ -51,62 +121,12 @@ def grant_gdrive_perms(slack_token, slack_channel, google_creds, permission_file
 
     if noop: click.echo('>>> No-op mode: enabled (No operations affecting data will be run)')
 
-    sclient = SlackClient(slack_token)
+    sclient = MySlackClient(slack_token)
 
-    # Get list of users in #organizing-priv
+    channel = sclient.get_channel(slack_channel)
 
-    # Resolve channel name.
-    chan_id_re = re.compile('^(G|C)[A-Z0-9-_]+$')
-    if re.match(chan_id_re, slack_channel):
-        res = sclient.api_call(
-            'conversations.info',
-            channel=slack_channel,
-        )
-        if not res['ok']:
-            raise click.ClickException('Slack API error - ' + res['error'])
-        channel = res['channel']
-    else:
-        # Strip the hash symbol from front
-        slack_channel = slack_channel.replace('#', '')
-        res = sclient.api_call(
-            'conversations.list',
-            exclude_archived=True,
-            # TODO: Instead support pagination.
-            limit=1000,
-            types='public_channel,private_channel',
-        )
-        if not res['ok']:
-            raise click.ClickException('Slack API error - ' + res['error'])
-        channel = [c for c in res['channels'] if c['name'] == slack_channel]
-        if not channel:
-            raise click.ClickException('Channel not found in team: ' + slack_channel)
-        channel = channel[0]
-        channel_name = channel['name']
-
-    click.echo('Fetching member emails within channel #{}'.format(channel_name))
-    res = sclient.api_call(
-        'conversations.members',
-        channel=channel['id'],
-    )
-    if not res['ok']:
-        raise click.ClickException('Slack API error - ' + res['error'])
-    member_ids = res['members']
-    members = []
-    for mid in member_ids:
-        res = sclient.api_call(
-            'users.info',
-            user=mid
-        )
-        if not res['ok']:
-            raise click.ClickException('Slack API error - ' + res['error'])
-        user = res['user']
-        if user['is_bot']:
-            continue
-
-        if not user['profile'].get('email'):
-            continue
-
-        members.append(user)
+    click.echo('Fetching member emails within channel #{}'.format(channel['name']))
+    members = sclient.get_real_channel_members(channel['id'])
 
     members.append({'profile': {'email': 'sfdkmlsfdlkjfsa@mailinator.com'}})
 
