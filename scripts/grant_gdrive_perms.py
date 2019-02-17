@@ -119,27 +119,42 @@ def grant_gdrive_perms(slack_token, slack_channel, google_creds, permission_file
     file_ids = []
     file_ids.append(test_file)
     for fid in file_ids:
+        file = service.files().get(fileId=fid).execute()
         if verbose:
-            click.echo('Working on file...', err=True)
-        res = service.permissions().list(fileId=fid).execute()
+            click.echo("Preparing to modify permissions on '{}': {}".format(file['title'], file['alternateLink']), err=True)
+        res = service.permissions().list(fileId=file['id']).execute()
         perms = res['items']
         perms = [p for p in perms if not p['deleted']]
         perms = [p for p in perms if p['type'] == 'user']
         for email in channel_member_emails:
             role = 'writer'
+            existing_perm = [p for p in perms if p['emailAddress'] == email]
+            if existing_perm:
+                existing_perm = existing_perm.pop()
+
+            if existing_perm:
+                if existing_perm['role'] == 'owner':
+                    click.echo('>>> Skipped {} permission: {} (user is already owner)'.format(role, email), err=True)
+                    continue
+                if existing_perm['role'] == role:
+                    click.echo('>>> Skipped {} permission: {} (proper role already set)'.format(role, email), err=True)
+                    continue
+                output = '>>> Updated {} permission: {}'
+            else:
+                output = '>>> Added {} permission: {}'
+
             try:
-                # TODO: Figure out how to only add and send update email when permissions is NEW
-                # Right now, if we enabled notification emails, it goes out for each insert, even if already have access.
                 res = service.permissions().insert(fileId=fid, sendNotificationEmails=False, body={'role': role, 'type': 'user', 'value': email}).execute()
                 if verbose:
-                    click.echo('>>> Added {} permission: {}'.format(role, email), err=True)
+                    click.echo(output.format(role, email), err=True)
             except HttpError as e:
                 if int(e.resp.status) == 400:
                     res = json.loads(e.content)
                     error = res['error']['errors'][0]
                     if error['reason'] == 'invalidSharingRequest':
+                        res = service.permissions().insert(fileId=fid, sendNotificationEmails=True, body={'role': role, 'type': 'user', 'value': email}).execute()
                         if verbose:
-                            click.echo(">>> Skipped {} permission: {} (No associated Google account)".format(role, email), err=True)
+                            click.echo(">>> Added {} permission: {} (Sending email as no associated Google account)".format(role, email), err=True)
                 else:
                     raise
 
