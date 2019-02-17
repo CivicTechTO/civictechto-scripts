@@ -18,10 +18,10 @@ tasks. Many of them run automatically each week.
   - [`notify_slack_roles.py`](#notify_slack_rolespy)
   - [`gsheet2meetup.py`](#gsheet2meetuppy)
   - [`gsheet2shortlinks.py`](#gsheet2shortlinkspy)
-  - [`grant_gdrive_perms.py`](#grant_gdrive_permspy)
-  - [`send_monthly_project_email.py`](#send_monthly_project_emailpy)
   - [`next-meetup` command](#next-meetup-command)
   - [`upload2gdrive` command](#upload2gdrive-command)
+  - [`grant_gdrive_perms.py`](#grant_gdrive_permspy)
+  - [`send_monthly_project_email.py`](#send_monthly_project_emailpy)
 - [Local Development](#computer-local-development)
 
 ## About these Automated Scripts
