@@ -4,14 +4,22 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from oauth2client.client import GoogleCredentials
 from oauth2client.service_account import ServiceAccountCredentials
+import os
 import pprint
 import re
 from slackclient import SlackClient
+import yaml
 
 
 CONTEXT_SETTINGS = dict(help_option_names=['--help', '-h'])
 GOOGLE_SCOPES = ['https://www.googleapis.com/auth/drive']
 CHAN_ID_RE = re.compile('^(G|C)[A-Z0-9-_]+$')
+
+def get_state(state):
+    filename = os.path.basename(__file__)
+    filename = os.path.splitext(filename)[0]
+    output = yaml.dump({filename: state})
+    return output
 
 class MySlackClient(SlackClient):
     def __init__(self, *args, **kwargs):
@@ -129,6 +137,13 @@ def grant_gdrive_perms(slack_token, slack_channel, google_creds, permission_file
     members = sclient.get_real_channel_members(channel['id'])
 
     members.append({'profile': {'email': 'sfdkmlsfdlkjfsa@mailinator.com'}})
+    state = {
+        'members': {
+            'added': [],
+            'updated': [],
+            'unchanged': [],
+        },
+    }
 
     # Get permissiosn of GDrive resources
     credentials = ServiceAccountCredentials.from_json_keyfile_name(google_creds, GOOGLE_SCOPES)
@@ -155,13 +170,17 @@ def grant_gdrive_perms(slack_token, slack_channel, google_creds, permission_file
             if existing_perm:
                 if existing_perm['role'] == 'owner':
                     click.echo('>>> Skipped {} permission: {} (user is already owner)'.format(role, email), err=True)
+                    state['members']['unchanged'].append(m)
                     continue
                 if existing_perm['role'] == role:
                     click.echo('>>> Skipped {} permission: {} (proper role already set)'.format(role, email), err=True)
+                    state['members']['unchanged'].append(m)
                     continue
                 output = '>>> Updated {} permission: {}'
+                state['members']['updated'].append(m)
             else:
                 output = '>>> Added {} permission: {}'
+                state['members']['added'].append(m)
 
             try:
                 res = service.permissions().insert(fileId=fid, sendNotificationEmails=False, body={'role': role, 'type': 'user', 'value': email}).execute()
@@ -178,7 +197,8 @@ def grant_gdrive_perms(slack_token, slack_channel, google_creds, permission_file
                 else:
                     raise
 
-        # Get list of google users with access
+    if True:
+        click.echo(get_state(state))
 
     if noop: click.echo('Command exited no-op mode without creating/updating any data.')
 
