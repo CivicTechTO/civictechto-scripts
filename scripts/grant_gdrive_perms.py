@@ -52,7 +52,6 @@ def grant_gdrive_perms(slack_token, slack_channel, google_creds, permission_file
     if noop: click.echo('>>> No-op mode: enabled (No operations affecting data will be run)')
 
     sclient = SlackClient(slack_token)
-    channel_member_emails = []
 
     # Get list of users in #organizing-priv
 
@@ -92,6 +91,7 @@ def grant_gdrive_perms(slack_token, slack_channel, google_creds, permission_file
     if not res['ok']:
         raise click.ClickException('Slack API error - ' + res['error'])
     member_ids = res['members']
+    members = []
     for mid in member_ids:
         res = sclient.api_call(
             'users.info',
@@ -103,13 +103,12 @@ def grant_gdrive_perms(slack_token, slack_channel, google_creds, permission_file
         if user['is_bot']:
             continue
 
-        email = user['profile'].get('email')
-        if email:
-            channel_member_emails.append(email)
-        else:
-            click.echo('NO EMAIL: ' + pprint.pformat(user))
+        if not user['profile'].get('email'):
+            continue
 
-    channel_member_emails.append('sfdkmlsfdlkjfsa@mailinator.com')
+        members.append(user)
+
+    members.append({'profile': {'email': 'sfdkmlsfdlkjfsa@mailinator.com'}})
 
     # Get permissiosn of GDrive resources
     credentials = ServiceAccountCredentials.from_json_keyfile_name(google_creds, GOOGLE_SCOPES)
@@ -126,7 +125,8 @@ def grant_gdrive_perms(slack_token, slack_channel, google_creds, permission_file
         perms = res['items']
         perms = [p for p in perms if not p['deleted']]
         perms = [p for p in perms if p['type'] == 'user']
-        for email in channel_member_emails:
+        for m in members:
+            email = m['profile']['email']
             role = 'writer'
             existing_perm = [p for p in perms if p['emailAddress'] == email]
             if existing_perm:
