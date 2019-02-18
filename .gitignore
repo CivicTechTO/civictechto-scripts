@@ -2,4 +2,4 @@
 *.csv
 service-key.json
 outputs/
-gdrive-permission-file.txt
+gdrive-permission-file.csv

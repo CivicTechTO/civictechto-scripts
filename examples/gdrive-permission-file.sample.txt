@@ -1,4 +1,0 @@
-# Password list
-writer:https://docs.google.com/document/d/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/edit?usp=drive_web&ouid=117169981156567015860
-# GDrive folder hierarchy
-writer:https://drive.google.com/drive/u/0/folders/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
