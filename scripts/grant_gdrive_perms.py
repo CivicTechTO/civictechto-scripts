@@ -135,12 +135,15 @@ def grant_gdrive_perms(slack_token, slack_channel, google_creds, permission_file
 
     sclient = MySlackClient(slack_token)
 
+    # TODO: Warn about non-private groups.
     channel = sclient.get_channel(slack_channel)
 
     click.echo('Checking members within channel #{}'.format(channel['name']))
     members = sclient.get_real_channel_members(channel['id'])
 
+    # TODO: Remove this.
     members.append({'profile': {'email': 'sfdkmlsfdlkjfsa@mailinator.com'}})
+    # TODO: Fix this to be per-file.
     state = {
         'members': {
             'added': [],
