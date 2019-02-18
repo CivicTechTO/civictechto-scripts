@@ -1,4 +1,5 @@
 import click
+import csv
 import json
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
@@ -8,6 +9,7 @@ import os
 import pprint
 import re
 from slackclient import SlackClient
+import urllib
 import yaml
 
 
@@ -18,7 +20,9 @@ CHAN_ID_RE = re.compile('^(G|C)[A-Z0-9-_]+$')
 def get_state(state):
     filename = os.path.basename(__file__)
     filename = os.path.splitext(filename)[0]
-    output = yaml.dump({filename: state})
+
+    yaml.Dumper.ignore_aliases = lambda *args: True
+    output = yaml.dump({filename: state}, default_flow_style=False)
     return output
 
 class MySlackClient(SlackClient):
@@ -104,8 +108,8 @@ class MySlackClient(SlackClient):
               metavar='<filepath>')
 @click.option('--permission-file',
               required=True,
-              help='Path to plaintext config file listing docs and permissions',
-              metavar='<filepath>')
+              help='Path to plaintext CSV file listing docs and permissions',
+              metavar='<file>')
 @click.option('--yes', '-y',
               help='Skip confirmation prompts',
               is_flag=True)
@@ -133,7 +137,7 @@ def grant_gdrive_perms(slack_token, slack_channel, google_creds, permission_file
 
     channel = sclient.get_channel(slack_channel)
 
-    click.echo('Fetching member emails within channel #{}'.format(channel['name']))
+    click.echo('Checking members within channel #{}'.format(channel['name']))
     members = sclient.get_real_channel_members(channel['id'])
 
     members.append({'profile': {'email': 'sfdkmlsfdlkjfsa@mailinator.com'}})
@@ -149,20 +153,39 @@ def grant_gdrive_perms(slack_token, slack_channel, google_creds, permission_file
     credentials = ServiceAccountCredentials.from_json_keyfile_name(google_creds, GOOGLE_SCOPES)
     if debug: click.echo('>>> Service account email: ' + credentials.service_account_email)
     service = build('drive', 'v2', credentials=credentials)
-    test_file = '1i7S3tlQgbON7rkL3ThWcoiArXRafO4-VV9e8rM3WmXY'
-    file_ids = []
-    file_ids.append(test_file)
-    for fid in file_ids:
+
+    def get_csv_rows(file):
+        # TODO: Handle URLs too
+        with open(file) as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                yield row
+
+    def get_gdrive_resource_key(url):
+        url_data = urllib.parse.urlsplit(url)
+        if url_data.netloc == '':
+            return url_data.path
+        if url_data.netloc == 'drive.google.com':
+            return url_data.path.split('/')[-1]
+        if url_data.netloc == 'docs.google.com':
+            return url_data.path.split('/')[-2]
+        return ''
+
+    for r in get_csv_rows(permission_file):
+        fid = get_gdrive_resource_key(r['resource_url'])
+        if not fid:
+            click.echo('Skipping: ' + r['resource_url'])
+            continue
         file = service.files().get(fileId=fid).execute()
         if verbose:
             click.echo("Preparing to modify permissions on '{}': {}".format(file['title'], file['alternateLink']), err=True)
         res = service.permissions().list(fileId=file['id']).execute()
         perms = res['items']
-        perms = [p for p in perms if not p['deleted']]
+        perms = [p for p in perms if not p.get('deleted')]
         perms = [p for p in perms if p['type'] == 'user']
         for m in members:
             email = m['profile']['email']
-            role = 'writer'
+            role = r['permission']
             existing_perm = [p for p in perms if p['emailAddress'] == email]
             if existing_perm:
                 existing_perm = existing_perm.pop()
@@ -183,7 +206,8 @@ def grant_gdrive_perms(slack_token, slack_channel, google_creds, permission_file
                 state['members']['added'].append(m)
 
             try:
-                res = service.permissions().insert(fileId=fid, sendNotificationEmails=False, body={'role': role, 'type': 'user', 'value': email}).execute()
+                if not noop:
+                    res = service.permissions().insert(fileId=fid, sendNotificationEmails=False, body={'role': role, 'type': 'user', 'value': email}).execute()
                 if verbose:
                     click.echo(output.format(role, email), err=True)
             except HttpError as e:
@@ -191,13 +215,15 @@ def grant_gdrive_perms(slack_token, slack_channel, google_creds, permission_file
                     res = json.loads(e.content)
                     error = res['error']['errors'][0]
                     if error['reason'] == 'invalidSharingRequest':
-                        res = service.permissions().insert(fileId=fid, sendNotificationEmails=True, body={'role': role, 'type': 'user', 'value': email}).execute()
+                        if not noop:
+                            res = service.permissions().insert(fileId=fid, sendNotificationEmails=True, body={'role': role, 'type': 'user', 'value': email}).execute()
                         if verbose:
                             click.echo(">>> Added {} permission: {} (Sending email as no associated Google account)".format(role, email), err=True)
                 else:
                     raise
 
-    if True:
+    echo_state = False
+    if echo_state:
         click.echo(get_state(state))
 
     if noop: click.echo('Command exited no-op mode without creating/updating any data.')
