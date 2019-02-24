@@ -102,6 +102,4 @@ else:
     sha = existing_csv_file.sha
     message = 'Updated data for {} hacknight.'.format(hacknight_date.strftime('%Y-%m-%d'))
     content = csvfile.getvalue().encode('utf-8')
-    # See: https://github.com/PyGithub/PyGithub/issues/786
-    path = '/' + path
     g.get_user('civictechto').get_repo('dataset-civictechto-breakout-groups').update_file(path, message, content, sha)
