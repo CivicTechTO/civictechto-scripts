@@ -2,9 +2,10 @@ from dotenv import load_dotenv
 import os
 import pystache
 import re
-from slackclient import SlackClient
 import sys
 from trello import TrelloClient
+
+from commands.slackclient import CustomSlackClient
 
 dirname = os.path.dirname(__file__)
 filename = os.path.join(dirname, '.env')
@@ -68,36 +69,15 @@ if len(cards) < 3:
 for i, card in enumerate(cards):
     cards[i] = process_card(card)
 
-template = """
-:ctto: :ctto: :ctto: :ctto: :ctto:
 
-Yay! Thanks to everyone who gave *this week's pitches*:
-
-{{#projects}}
-:small_blue_diamond: {{{ name }}} {{ #chat_room }}| {{ chat_room }}{{ /chat_room }} {{ #pitcher }}| :speaking_head_in_silhouette: {{ pitcher }}{{ /pitcher }}
-{{/projects}}
-"""
+thread_template = open('templates/notify_slack_pitches.txt').read()
+thread_content = pystache.render(thread_template, {'projects': cards})
 
 if DEBUG or not SLACK_API_TOKEN:
-    print(pystache.render(template.strip(), {'projects': cards}))
+    print(thread_content)
 else:
-    sc = SlackClient(SLACK_API_TOKEN)
-    msg = sc.api_call(
-            'chat.postMessage',
-            channel=SLACK_ANNOUNCE_CHANNEL,
-            as_user=False,
-            username='civictechto-scripts',
-            icon_emoji=':robot_face:',
-            parse='full',
-            text=pystache.render(template.strip(), {'projects': cards})
-            )
-    sc.api_call(
-            'chat.postMessage',
-            channel=SLACK_ANNOUNCE_CHANNEL,
-            as_user=False,
-            username='civictechto-scripts',
-            icon_emoji=':robot_face:',
-            thread_ts=msg['ts'],
-            unfurl_links=False,
-            text='Curious how this message gets posted? https://github.com/civictechto/civictechto-scripts#readme'
-            )
+    sc = CustomSlackClient(SLACK_API_TOKEN)
+    sc.bot_thread(
+        channel=SLACK_ANNOUNCE_CHANNEL,
+        thread_content=thread_content,
+    )

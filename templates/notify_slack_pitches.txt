@@ -1,0 +1,11 @@
+:ctto: :ctto: :ctto: :ctto: :ctto:
+
+Yay! Thanks to everyone who gave *this week's pitches*:
+
+{{#projects}}
+:small_blue_diamond: {{{name}}} {{#chat_room}}| {{chat_room}} {{/chat_room}}{{#pitcher}}| {{pitcher}} :speaking_head_in_silhouette:{{/pitcher}}
+{{/projects}}
+
+---
+
+Curious how this message gets posted? <https://github.com/civictechto/civictechto-scripts#readme|Start here!>
