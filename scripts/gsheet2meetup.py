@@ -192,6 +192,10 @@ def gsheet2meetup(meetup_api_key, gsheet, meetup_group_slug, yes, verbose, debug
     # Iterate through CSV content and perform actions on data
     reader = csv.DictReader(csv_content, delimiter=',')
     for row in reader:
+        # Skip if date not set.
+        if not row['date']:
+            continue
+
         # Set date of event start.
         EVENT_START_TIME = '18:30'
         h, m = EVENT_START_TIME.split(':')
