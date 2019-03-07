@@ -35,40 +35,50 @@ lists = board.get_lists('open')
 [pitch_list] = [l for l in lists if l.name == LIST_TONIGHT]
 cards = pitch_list.list_cards()
 
-def process_card(card):
-    data = {
-            'name': card.name,
-            'chat_room': '',
-            'pitcher': '',
-            }
 
-    attachments = card.get_attachments()
-    chat_re = re.compile('^(?:slack|chat): (\S+)$', flags=re.IGNORECASE)
-    chat_attachments = [a for a in attachments if chat_re.match(a.name)]
-    if chat_attachments:
-        data['chat_room'] = chat_re.match(chat_attachments.pop(0).name).group(1)
+class BreakoutGroup(object):
+    CHAT_RE = re.compile('^(?:slack|chat): (\S+)$', flags=re.IGNORECASE)
+    PITCHER_RE = re.compile('pitchers?:? ?(.+)', flags=re.IGNORECASE)
 
-    comments = card.get_comments()
-    comments.reverse()
-    pitcher_re = re.compile('pitchers?:? ?(.+)', flags=re.IGNORECASE)
-    # Get most recent pitcher
-    # TODO: Check whether comment made in past week.
-    for c in comments:
-        match = pitcher_re.match(c['data']['text'])
-        if match:
-            pitcher_raw = match.group(1)
-            data['pitcher'] = pitcher_raw
-            break
+    name = None
+    chat_room = None
+    pitcher = None
 
-    return data
+    def __init__(self, card):
+        self.generate_from_trello_card(card)
+
+    def generate_from_trello_card(self, card):
+        self.name = card.name
+        self.chat_room = self._get_chat_room(card)
+        self.pitcher = self._get_pitcher(card)
+
+    def _get_chat_room(self, card):
+        attachments = card.get_attachments()
+        for a in attachments:
+            match = self.CHAT_RE.match(a.name)
+            if match:
+                return match.group(1)
+
+        return ''
+
+    def _get_pitcher(self, card):
+        comments = card.get_comments()
+        comments.reverse()
+        # Get most recent pitcher
+        # TODO: Check whether comment made in past week.
+        for c in comments:
+            match = self.PITCHER_RE.match(c['data']['text'])
+            if match:
+                return match.group(1)
+
+        return ''
 
 # Assume Trello not used this week
 if len(cards) < 3:
     sys.exit()
 
 for i, card in enumerate(cards):
-    cards[i] = process_card(card)
-
+    cards[i] = vars(BreakoutGroup(card))
 
 thread_template = open('templates/notify_slack_pitches.txt').read()
 thread_content = pystache.render(thread_template, {'projects': cards})
