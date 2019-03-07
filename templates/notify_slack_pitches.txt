@@ -1,9 +1,9 @@
 :ctto: :ctto: :ctto: :ctto: :ctto:
 
-Yay! Thanks to everyone who gave *this week's pitches*:
+Yay! Thanks to all pitchers :speaking_head_in_silhouette: who hosted *this week's breakout groups*: (:fire: = streak)
 
 {{#projects}}
-:small_blue_diamond: {{{name}}} {{#chat_room}}| {{chat_room}} {{/chat_room}}{{#pitcher}}| {{pitcher}} :speaking_head_in_silhouette:{{/pitcher}}
+:small_blue_diamond: *{{{name}}}* {{#chat_room}}| {{chat_room}} {{/chat_room}}{{#pitcher}}| {{pitcher}} :speaking_head_in_silhouette: {{/pitcher}}{{#streak}}| :fire: _x_ {{streak}}{{/streak}}
 {{/projects}}
 
 ---

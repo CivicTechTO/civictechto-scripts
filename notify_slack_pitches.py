@@ -1,8 +1,12 @@
+import csv
 from dotenv import load_dotenv
+import itertools
 import os
 import pystache
 import re
+import requests
 import sys
+import time
 from trello import TrelloClient
 
 from commands.slackclient import CustomSlackClient
@@ -13,6 +17,8 @@ load_dotenv(dotenv_path=filename)
 
 def str2bool(v):
   return v.lower() in ("yes", "true", "t", "1")
+
+SCRIPT_TIME = int(time.time())
 
 DEBUG = str2bool(os.getenv('DEBUG', ''))
 SLACK_API_TOKEN = os.getenv('SLACK_API_TOKEN')
@@ -40,20 +46,43 @@ class BreakoutGroup(object):
     CHAT_RE = re.compile('^(?:slack|chat): (\S+)$', flags=re.IGNORECASE)
     PITCHER_RE = re.compile('pitchers?:? ?(.+)', flags=re.IGNORECASE)
 
+    card = None
     name = None
     chat_room = None
     pitcher = None
+    streak = 0
 
     def __init__(self, card):
-        self.generate_from_trello_card(card)
+        self.card = card
+        self.generate_from_trello_card()
+        self.calculate_streak()
 
-    def generate_from_trello_card(self, card):
-        self.name = card.name
-        self.chat_room = self._get_chat_room(card)
-        self.pitcher = self._get_pitcher(card)
+    def generate_from_trello_card(self):
+        self.name = self.card.name
+        self.chat_room = self._get_chat_room()
+        self.pitcher = self._get_pitcher()
 
-    def _get_chat_room(self, card):
-        attachments = card.get_attachments()
+    def calculate_streak(self):
+        self._update_streak_count()
+
+    def _update_streak_count(self):
+        dataset_url = 'https://raw.githubusercontent.com/CivicTechTO/dataset-civictechto-breakout-groups/master/data/civictechto-breakout-groups.csv?r={}'.format(SCRIPT_TIME)
+        r = requests.get(dataset_url)
+        csv_content = r.content.decode('utf-8')
+        csv_content = csv_content.split('\r\n')
+        reader = csv.DictReader(csv_content, delimiter=',')
+        # TODO: Ensure these are sorted by date.
+        reverse_chron = list(reader)[::-1]
+        for key, group in itertools.groupby(reverse_chron, key=lambda r: r['date']):
+            matches = [p for p in group if p['trello_card_id'] == self.card.id]
+            if matches:
+                self.streak += 1
+                continue
+            else:
+                break
+
+    def _get_chat_room(self):
+        attachments = self.card.get_attachments()
         for a in attachments:
             match = self.CHAT_RE.match(a.name)
             if match:
@@ -61,8 +90,8 @@ class BreakoutGroup(object):
 
         return ''
 
-    def _get_pitcher(self, card):
-        comments = card.get_comments()
+    def _get_pitcher(self):
+        comments = self.card.get_comments()
         comments.reverse()
         # Get most recent pitcher
         # TODO: Check whether comment made in past week.
