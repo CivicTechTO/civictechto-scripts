@@ -7,7 +7,7 @@ name = "pypi"
 click = "*"
 gspread = "*"
 mailchimp3 = "*"
-meetup-api = {editable = true, ref = "develop", git = "https://github.com/patcon/meetup-api.git"}
+meetup-api = {editable = true,ref = "develop",git = "https://github.com/patcon/meetup-api.git"}
 oauth2client = "*"
 py-trello = "*"
 PyDrive = "*"
@@ -17,8 +17,8 @@ requests = "*"
 slackclient = "*"
 Jinja2 = "*"
 PyGithub = "*"
-
-anki-meetup-memorizer = {editable = true, ref = "master", git = "https://github.com/civictechto/anki-meetup-memorizer.git"}
+anki-meetup-memorizer = {editable = true,ref = "master",git = "https://github.com/civictechto/anki-meetup-memorizer.git"}
+python-dateutil = "*"
 
 [dev-packages]
 
