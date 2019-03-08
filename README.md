@@ -98,6 +98,8 @@ Options:
   -t, --to-list TEXT     Name or ID of Trello list which cards are moved INTO.
                          [required]
   -b, --board TEXT       ID of Trello board on which to act.  [required]
+  -d, --older-than DAYS  If provided, card only moved if older than this.
+                         Default: 0
   -y, --yes              Skip confirmation prompts
   -v, --verbose          Show output for each action
   -d, --debug            Show full debug output

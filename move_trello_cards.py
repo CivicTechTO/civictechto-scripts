@@ -43,16 +43,15 @@ CONTEXT_SETTINGS = dict(help_option_names=['--help', '-h'])
               default='EVvNEGK5',
               help='ID of Trello board on which to act.',
               )
-@click.option('--stale-days', '-d',
+@click.option('--older-than', '-d',
               default=0,
-              help='If provided, card not moved unless stale for this many days.',
+              help='If provided, card only moved if older than this. Default: 0',
+              metavar='DAYS',
               )
 @common_params
-def move_trello_cards(api_key, api_secret, from_list, to_list, board, stale_days, yes, verbose, debug, noop):
+def move_trello_cards(api_key, api_secret, from_list, to_list, board, older_than, yes, verbose, debug, noop):
     if debug: click.echo('>>> Debug mode: enabled')
     if noop: click.echo('>>> No-op mode: enabled (No operations affecting data will be run)')
-    if stale_days:
-        raise NotImplementedError
 
     board_id = board
 
@@ -81,12 +80,13 @@ def move_trello_cards(api_key, api_secret, from_list, to_list, board, stale_days
         if c.name in CARD_IGNORE_LIST:
             continue
 
-        date = c.dateLastActivity
-        delta = timedelta(days=stale_days)
-        now = datetime.now(dateutil.tz.tzutc())
-        if debug:
-            print(c.name)
-            print(date+delta < now)
+        breakout = BreakoutGroup(c)
+
+        delta = timedelta(days=older_than)
+        now = datetime.now()
+        if breakout.last_pitch_date+delta > now:
+            # Skip cards that have been pitched within timeframe.
+            continue
 
         if not noop:
             c.change_list(to_list.id)

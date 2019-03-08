@@ -33,7 +33,7 @@ workflows:
   pre_hacknight:
     jobs:
       - reset_pitches
-      # - move_stale_pitches
+      - move_stale_pitches
     triggers:
       - schedule:
           # Every Tues evening at 6pm ET
@@ -142,7 +142,7 @@ jobs:
             pipenv run python move_trello_cards.py --verbose \
               --from-list "58e158eba6846a4fb012404c" \
               --to-list "58f00f6a5b08f3b8b02aa673" \
-              --stale-days "30" \
+              --older-than "30" \
 
   backup_trello:
     <<: *default_job

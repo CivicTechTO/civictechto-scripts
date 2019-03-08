@@ -4,6 +4,8 @@ import re
 import requests
 import time
 
+from datetime import datetime
+
 
 class BreakoutGroup(object):
     CHAT_RE = re.compile('^(?:slack|chat): (\S+)$', flags=re.IGNORECASE)
@@ -17,6 +19,8 @@ class BreakoutGroup(object):
     streak_count = 0
     pitch_count = 0
     is_new = False
+    # If no record, assume very old.
+    last_pitch_date = datetime(2016, 8, 1)
 
     def __init__(self, card):
         self.card = card
@@ -45,6 +49,12 @@ class BreakoutGroup(object):
 
         if self.pitch_count == 0:
             self.is_new = True
+
+        # Get last pitch date.
+        for row in reverse_chron:
+            if row['trello_card_id'] == self.card.id:
+                self.last_pitch_date = datetime.strptime(row['date'], '%Y-%m-%d')
+                break
 
         # Tally streak count.
         self.streak_count = 0
