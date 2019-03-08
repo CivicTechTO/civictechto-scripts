@@ -208,7 +208,7 @@ def gsheet2meetup(meetup_api_key, gsheet, meetup_group_slug, yes, verbose, debug
         # sometime that is one day offset, we pad a day. We only update
         # "upcoming" events on Meetup.com, so any rows for "past" events (which
         # aren't editable) won't be caught in this.
-        is_definitely_past = lambda d: d < datetime.datetime.now()-datetime.timedelta(days=7)
+        is_definitely_past = lambda d: d < datetime.datetime.now()-datetime.timedelta(days=1)
 
         if is_definitely_past(gevent_start):
             continue
