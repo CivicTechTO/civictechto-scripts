@@ -122,7 +122,7 @@ message in Slack's `#general` channel, announcing who pitched this week.
 
 Runs post-hacknight.
 
-![Screenshot of Slack post](https://i.imgur.com/M1y4Yi6.png)
+![Screenshot of Slack post](https://i.imgur.com/mhHudig.png)
 
 ### `notify_slack_roles.py`
 
