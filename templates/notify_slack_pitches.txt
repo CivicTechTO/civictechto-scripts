@@ -1,11 +1,14 @@
 :ctto: :ctto: :ctto: :ctto: :ctto:
 
-Yay! Thanks to all pitchers :speaking_head_in_silhouette: who hosted *this week's breakout groups*: (:fire: = streak)
+Yay! Thanks to the pitchers :speaking_head_in_silhouette: who hosted *this week's breakout groups*:
 
 {{#projects}}
-:small_blue_diamond: *{{{name}}}* {{#chat_room}}| {{chat_room}} {{/chat_room}}{{#pitcher}}| {{pitcher}} :speaking_head_in_silhouette: {{/pitcher}}{{#streak}}| :fire: _x_ {{streak}}{{/streak}}
+{{#is_new}}:hatching_chick:{{/is_new}}{{^is_new}}:black_small_square:{{/is_new}} *{{{name}}}* {{#chat_room}}| {{.}} {{/chat_room}}{{#pitcher}}| {{.}} {{/pitcher}}{{#streak_count}}| :fire:x{{.}}{{/streak_count}}
 {{/projects}}
 
 ---
+
+:fire: Pitch Streak
+:hatching_chick: New
 
 Curious how this message gets posted? <https://github.com/civictechto/civictechto-scripts#readme|Start here!>
