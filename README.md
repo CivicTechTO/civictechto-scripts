@@ -12,7 +12,7 @@ tasks. Many of them run automatically each week.
 - [About This Repo](#about-these-automated-scripts)
 - [Technologies Used](#technologies-used)
 - **Scripts**
-  - [`move_trello_cards.py`](#move_trell_cardspy)
+  - [`move_trello_cards.py`](#move_trello_cardspy)
   - [`update_pitch_csv.py`](#update_pitch_csvpy)
   - [`notify_slack_pitches.py`](#notify_slack_pitchespy)
   - [`notify_slack_roles.py`](#notify_slack_rolespy)
