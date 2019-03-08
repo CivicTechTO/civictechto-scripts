@@ -12,7 +12,7 @@ tasks. Many of them run automatically each week.
 - [About This Repo](#about-these-automated-scripts)
 - [Technologies Used](#technologies-used)
 - **Scripts**
-  - [`clean_pitch_list.py`](#clean_pitch_listpy)
+  - [`move_trello_cards.py`](#move_trell_cardspy)
   - [`update_pitch_csv.py`](#update_pitch_csvpy)
   - [`notify_slack_pitches.py`](#notify_slack_pitchespy)
   - [`notify_slack_roles.py`](#notify_slack_rolespy)
@@ -77,7 +77,7 @@ environment. After installing, just follow these steps.
 
 ## Scripts
 
-### `clean_pitch_list.py`
+### `move_trello_cards.py`
 
 On the [Trello board][trello-board], this moves all cards from one list to another.
 
@@ -86,7 +86,23 @@ On the [Trello board][trello-board], this moves all cards from one list to anoth
 Runs pre-hacknight.
 
 ```
-python clean_pitch_list.py
+$ pipenv run python move_trello_cards.py --help
+
+Usage: move_trello_cards.py [OPTIONS]
+
+Options:
+  -k, --api-key TEXT     Trello API key.  [required]
+  -s, --api-secret TEXT  Trello API token/secret.  [required]
+  -f, --from-list TEXT   Name or ID of Trello list which cards are moved FROM.
+                         [required]
+  -t, --to-list TEXT     Name or ID of Trello list which cards are moved INTO.
+                         [required]
+  -b, --board TEXT       ID of Trello board on which to act.  [required]
+  -y, --yes              Skip confirmation prompts
+  -v, --verbose          Show output for each action
+  -d, --debug            Show full debug output
+  --noop                 Skip API calls that change/destroy data
+  -h, --help             Show this message and exit.
 ```
 
 ### `update_pitch_csv.py`

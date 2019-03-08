@@ -122,7 +122,7 @@ jobs:
           name: run script
           command: |
             # Move from list "Tonight's Pitches" to "Recent Pitches"
-            pipenv run python clean_pitch_list.py --verbose \
+            pipenv run python move_trello_cards.py --verbose \
               --from-list "58e158f29b0ae02ab71b9a87" \
               --to-list "58e158eba6846a4fb012404c" \
 
