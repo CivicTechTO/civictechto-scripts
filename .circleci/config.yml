@@ -65,10 +65,6 @@ jobs:
         # Used to ignore cleaning CT101 card from pitch list, but seems better
         # to repopulate list manually each week
       - TRELLO_CARD_IGNORE_LIST: ""
-        # For list: "Tonight's Pitches"
-      - TRELLO_LIST_TONIGHT: 58e158f29b0ae02ab71b9a87
-        # For list: "Recent Pitches (Past Month)"
-      - TRELLO_LIST_RECENT: 58e158eba6846a4fb012404c
         # For channel: #general
       - SLACK_ANNOUNCE_CHANNEL_PUB: C04TJ34KG
         # For channel: #organizing-open
@@ -125,7 +121,10 @@ jobs:
       - run:
           name: run script
           command: |
-            pipenv run python clean_pitch_list.py
+            # Move from list "Tonight's Pitches" to "Recent Pitches"
+            pipenv run python clean_pitch_list.py --verbose \
+              --from-list "58e158f29b0ae02ab71b9a87" \
+              --to-list "58e158eba6846a4fb012404c" \
 
   backup_trello:
     <<: *default_job
