@@ -219,7 +219,9 @@ def gsheet2meetup(meetup_api_key, gsheet, meetup_group_slug, yes, verbose, debug
             continue
 
         get_mevent_start = lambda ev: datetime.datetime.fromtimestamp(ev.get('time')/1000)
-        [this_event] = [ev for ev in meetup_events if get_mevent_start(ev).date() == gevent_start.date()]
+        this_event = [ev for ev in meetup_events if get_mevent_start(ev).date() == gevent_start.date()]
+        if this_event:
+            this_event = this_event.pop()
 
         # TODO: if event doesn't exist, create
         if not this_event:
