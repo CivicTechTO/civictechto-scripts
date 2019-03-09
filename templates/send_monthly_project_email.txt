@@ -1,0 +1,7 @@
+A monthly project update email has been scheduled for sending! :love_letter:
+:alarm_clock: Delivery: {{send_date}}
+:family: Subscribers: {{subscriber_count}}   |   <{{preview_url}}|:eye: *Preview*>
+
+---
+
+Curious how this message gets posted? <https://github.com/civictechto/civictechto-scripts#readme|Start here!>

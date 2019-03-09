@@ -23,16 +23,14 @@
 # 1. Notify slack of the scheduled campaign with archive_url to preview.
 
 from datetime import datetime, timedelta
-from dotenv import load_dotenv
 from jinja2 import Template
 from mailchimp3 import MailChimp
 import os
+import pystache
 import pytz
-from slackclient import SlackClient
 
-dirname = os.path.dirname(__file__)
-filename = os.path.join(dirname, '.env')
-load_dotenv(dotenv_path=filename)
+from commands.slackclient import CustomSlackClient
+
 
 def str2bool(v):
   return v.lower() in ("yes", "true", "t", "1")
@@ -129,7 +127,7 @@ campaign_data = {
             'list_id': MAILCHIMP_LIST_ID,
             },
         'settings': {
-            'subject_line': 'Civic Tech Toronto: June update',
+            'subject_line': 'Pitch recap for {}'.format('March'),
             'from_name': 'Civic Tech Toronto',
             'reply_to': 'hi@civictech.ca',
             'template_id': MAILCHIMP_TEMPLATE_ID,
@@ -156,33 +154,21 @@ rounded_send_time = send_time.replace(minute=15*(send_time.minute // 15))
 mc_client.campaigns.actions.schedule(campaign_id=campaign['id'], data={'schedule_time': rounded_send_time})
 
 list_data = mc_client.lists.get(MAILCHIMP_LIST_ID)
-subscriber_count = list_data['stats']['member_count']
-preview_url = campaign['archive_url']
-# TODO: Convert this time from UTC to ET
-announcement = 'A monthly project update ({} subscribers) has been scheduled for {}: {}'.format(subscriber_count, rounded_send_time.strftime('%a, %b %-m @ %-I:%M%p'), preview_url)
-if DEBUG:
-    print(announcement)
-else:
-    sc = SlackClient(SLACK_API_TOKEN)
-    msg = sc.api_call(
-            'chat.postMessage',
-            channel=SLACK_ANNOUNCE_CHANNEL,
-            as_user=False,
-            username='civictechto-scripts',
-            icon_emoji=':robot_face:',
-            link_names=1,
-            unfurl_links=False,
-            text=announcement
-            )
-    sc.api_call(
-            'chat.postMessage',
-            channel=SLACK_ANNOUNCE_CHANNEL,
-            as_user=False,
-            username='civictechto-scripts',
-            icon_emoji=':robot_face:',
-            thread_ts=msg['ts'],
-            link_names=1,
-            unfurl_links=False,
-            text='Curious how this message gets posted? https://github.com/civictechto/civictechto-scripts#readme'
-            )
 
+tmpl_vars = {
+    'subscriber_count': list_data['stats']['member_count'],
+    # TODO: Convert this time from UTC to ET
+    'send_date': rounded_send_time.strftime('%a, %b %-m @ %-I:%M') + rounded_send_time.strftime('%p').lower(),
+    'preview_url': campaign['archive_url'],
+}
+thread_template = open('templates/send_monthly_project_email.txt').read()
+thread_content = pystache.render(thread_template, tmpl_vars)
+
+if DEBUG or not SLACK_API_TOKEN:
+    print(thread_content)
+else:
+    sc = CustomSlackClient(SLACK_API_TOKEN)
+    sc.bot_thread(
+        channel=SLACK_ANNOUNCE_CHANNEL,
+        thread_content=thread_content,
+    )
