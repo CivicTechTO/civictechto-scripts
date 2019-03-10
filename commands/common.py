@@ -1,6 +1,7 @@
 import click
 import functools
 import hashlib
+import re
 
 
 ENVVAR_PREFIX = 'CTTO'
@@ -38,3 +39,19 @@ def echo_config(dict, fields):
     for k, v in dict.items():
         if k in fields:
             click.echo('{}: {}'.format(k, v))
+
+def parse_gdoc_url(url):
+    GDOC_URL_RE = re.compile('https://docs.google.com/(?:spreadsheets|document)/d/([\w_-]+)/(?:edit|view)(?:#gid=([0-9]+))?')
+    matches = GDOC_URL_RE.match(url)
+
+    # Raise error if key not parseable.
+    spreadsheet_key = matches.group(1)
+    if spreadsheet_key == None:
+        raise 'Could not parse key from spreadsheet url'
+
+    # Assume first worksheet if not specified.
+    worksheet_id = matches.group(2)
+    if worksheet_id == None:
+        worksheet_id = 0
+
+    return spreadsheet_key, worksheet_id

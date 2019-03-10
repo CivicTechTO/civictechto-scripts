@@ -1,0 +1,14 @@
+Heyo! Here's a status update on speaker/venue bookings for the next 10 hacknights:
+
+:calendar: :one: :two: :three: :four: :five: :six: :seven: :eight: :nine: :keycap_ten: :calendar:
+:speaking_head_in_silhouette: {{speaker_statuses}} :speaking_head_in_silhouette:
+:house: {{venue_statuses}} :house:
+
+---
+
+:white_check_mark: Booked
+:heavy_multiplication_x: Not yet booked
+:ctto: Project updates
+:question: Unknown
+
+Curious how this message gets posted? <https://github.com/civictechto/civictechto-scripts#readme|Start here!>
