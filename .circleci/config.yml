@@ -268,7 +268,7 @@ jobs:
           # Rebrandly key set as envvar CTTO_REBRANDLY_API_KEY
           command: |
             # Announce to #organizing-open
-            pipenv run python announce-booking-status \
+            pipenv run python cli.py announce-booking-status \
               --channel "C4SHX39B2" \
               --gsheet "https://docs.google.com/spreadsheets/d/1-p0CyUMC0nqrEQNc6Yikd2vg033GoChSWR8rFKFxfgU/edit#gid=0" \
 
