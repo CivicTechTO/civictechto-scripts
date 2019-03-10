@@ -42,13 +42,13 @@ class BookingsProcessor(object):
         for b in self.venue_bookings[:10]:
             e = lookup[b.status]
             emojis.append(e)
-        self.venue_string = " ".join(emojis)
+        self.venue_string = "".join(emojis)
 
         emojis = []
         for b in self.speaker_bookings[:10]:
             e = lookup[b.status]
             emojis.append(e)
-        self.speaker_string = " ".join(emojis)
+        self.speaker_string = "".join(emojis)
 
     def _process_bookings(self):
         # Iterate through CSV content and perform actions on data
