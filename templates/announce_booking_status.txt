@@ -1,8 +1,8 @@
 Heyo! Here's a status update on speaker/venue bookings for the next 10 hacknights:
 
-:calendar: :one: :two: :three: :four: :five: :six: :seven: :eight: :nine: :keycap_ten: :calendar:
-:speaking_head_in_silhouette: {{speaker_statuses}} :speaking_head_in_silhouette:
-:house: {{venue_statuses}} :house:
+:one: :two: :three: :four: :five: :six: :seven: :eight: :nine: :keycap_ten: :calendar:
+{{speaker_statuses}} :speaking_head_in_silhouette:
+{{venue_statuses}} :house:
 
 ---
 
