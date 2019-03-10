@@ -21,6 +21,7 @@ tasks. Many of them run automatically each week.
   - [`send_monthly_project_email.py`](#send_monthly_project_emailpy)
   - [`next-meetup` command](#next-meetup-command)
   - [`upload2gdrive` command](#upload2gdrive-command)
+  - [`announce-booking-status` command](#announce-booking-status-command)
 - [Local Development](#computer-local-development)
 
 ## About these Automated Scripts
@@ -263,6 +264,38 @@ Options:
 ```
 
 This command runs in conjunction with other tasks/scripts.
+
+### `announce-booking-status` command
+
+Reads from the [speaker booking spreadsheet][speaker-sheet] and generates a
+message in Slack.
+
+![Screenshot of posted Slack message](https://i.imgur.com/seJt18j.png)
+
+   [speaker-sheet]: https://docs.google.com/spreadsheets/d/1-p0CyUMC0nqrEQNc6Yikd2vg033GoChSWR8rFKFxfgU/edit#gid=0
+
+```
+$ pipenv run python cli.py announce-booking-status --help
+
+Usage: cli.py announce-booking-status [OPTIONS]
+
+  Notify a slack channel of high-level status for upcoming event & speaker
+  booking.
+
+Options:
+  --gsheet TEXT       URL to publicly readable Google Spreadsheet.  [required]
+  --slack-token TEXT  API token for any Slack user.
+  -c, --channel TEXT  Name or ID of Slack channel in which to announce.
+                      [required]
+  -y, --yes           Skip confirmation prompts
+  -v, --verbose       Show output for each action
+  -d, --debug         Show full debug output
+  --noop              Skip API calls that change/destroy data
+  -h, --help          Show this message and exit.
+```
+
+This command runs weekly after hacknight.
+
 
 ### `send_monthly_project_email.py`
 
