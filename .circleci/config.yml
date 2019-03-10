@@ -47,6 +47,7 @@ workflows:
       - notify_slack_pitches
       #- backup_trello
       - save_pitch_data
+      - announce_booking_status
     triggers:
       - schedule:
           # Every Wed morning at 4am ET
@@ -253,6 +254,23 @@ jobs:
             pipenv run python cli.py upload2gdrive "$APKG_FILE" --yes --verbose \
               --gdrive-folder "0B2riIxpG2GHERjFlRHYzTTJOa0E" \
               --google-creds service-key.json
+
+  announce_booking_status:
+    <<: *default_job
+    steps:
+      - checkout
+      - run: {<<: *decrypt_files}
+      - restore_cache: {<<: *restore_cache}
+      - run: {<<: *install_dependencies}
+      - save_cache: {<<: *save_cache}
+      - run:
+          name: run script
+          # Rebrandly key set as envvar CTTO_REBRANDLY_API_KEY
+          command: |
+            # Announce to #organizing-open
+            pipenv run python announce-booking-status \
+              --channel "C4SHX39B2" \
+              --gsheet "https://docs.google.com/spreadsheets/d/1-p0CyUMC0nqrEQNc6Yikd2vg033GoChSWR8rFKFxfgU/edit#gid=0" \
 
   # Doesn't yet run in workflow
   email_monthly_update:
