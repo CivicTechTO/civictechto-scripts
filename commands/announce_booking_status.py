@@ -1,31 +1,14 @@
 import click
-import csv
 import dateparser
 import pystache
 import requests
 
 from datetime import datetime
 
-from commands.common import common_params, parse_gdoc_url
+from commands.common import common_params, parse_gdoc_url, InsensitiveDictReader
 from commands.slackclient import CustomSlackClient
 
 CONTEXT_SETTINGS = dict(help_option_names=['--help', '-h'])
-
-class InsensitiveDictReader(csv.DictReader):
-    # This class overrides the csv.fieldnames property, which converts all fieldnames without leading and trailing spaces and to lower case.
-
-    @property
-    def fieldnames(self):
-        return [field.strip().lower() for field in csv.DictReader.fieldnames.fget(self)]
-
-    def next(self):
-        return InsensitiveDict(csv.DictReader.next(self))
-
-class InsensitiveDict(dict):
-    # This class overrides the __getitem__ method to automatically strip() and lower() the input key
-
-    def __getitem__(self, key):
-        return dict.__getitem__(self, key.strip().lower())
 
 class Booking(object):
     status = str()
@@ -93,7 +76,7 @@ class BookingsProcessor(object):
                 speaker_booking.status = 'booked'
                 if 'project update' in row['name'].lower():
                     speaker_booking.status = 'updates'
-                elif row['name'].startswith('('):
+                elif row['name'].startswith('(') or row['name'].startswith('--'):
                     speaker_booking.status = 'unknown'
             else:
                 speaker_booking.status = 'unbooked'
@@ -115,7 +98,21 @@ class BookingsProcessor(object):
               )
 @common_params
 def announce_booking_status(gsheet, channel, slack_token, yes, verbose, debug, noop):
-    """Notify a slack channel of high-level status for event & speaker booking."""
+    """Notify a slack channel of high-level status for upcoming event & speaker booking.
+
+        * The argument --gsheet tells which CSV to read from.
+
+            * Column names are case-insensitive
+
+            * Any value in the `venue` column will show as booked.
+
+            * The speaker status looks for values in the `name` or `org` columns.
+
+                * `name` fields with `-- Project updates` will show as such, via :ctto: emoji
+
+                * `name` fields surrounded in brackets will mark as unknown.
+
+                * `name` fields starting with any other `-- <something>` will mark as unknown."""
     if noop:
         raise NotImplementedError
 
