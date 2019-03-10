@@ -132,6 +132,7 @@ def announce_booking_status(gsheet, channel, slack_token, yes, verbose, debug, n
     tmpl_vars = {
         'venue_statuses': bookings.venue_string,
         'speaker_statuses': bookings.speaker_string,
+        'gsheet_url': 'https://docs.google.com/spreadsheets/d/{}/view#gid={}'.format(spreadsheet_key, worksheet_id),
     }
 
     thread_template = open('templates/announce_booking_status.txt').read()
