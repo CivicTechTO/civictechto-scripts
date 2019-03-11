@@ -39,13 +39,13 @@ class BookingsProcessor(object):
         }
 
         emojis = []
-        for b in self.venue_bookings[:10]:
+        for b in self.venue_bookings[:11]:
             e = lookup[b.status]
             emojis.append(e)
         self.venue_string = "".join(emojis)
 
         emojis = []
-        for b in self.speaker_bookings[:10]:
+        for b in self.speaker_bookings[:11]:
             e = lookup[b.status]
             emojis.append(e)
         self.speaker_string = "".join(emojis)
