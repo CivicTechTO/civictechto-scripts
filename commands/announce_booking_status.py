@@ -12,12 +12,15 @@ CONTEXT_SETTINGS = dict(help_option_names=['--help', '-h'])
 
 class Booking(object):
     status = str()
+    date = None
 
 class BookingsProcessor(object):
     EMOJI_BOOKED = ':white_check_mark:'
     EMOJI_NOT_BOOKED = ':heavy_multiplication_x:'
     EMOJI_UNKNOWN = ':question:'
     EMOJI_PROJECT_UPDATE = ':ctto:'
+
+    EVENT_COUNT = 11
 
     csv_content = str()
     venue_bookings = []
@@ -39,13 +42,13 @@ class BookingsProcessor(object):
         }
 
         emojis = []
-        for b in self.venue_bookings[:11]:
+        for b in self.venue_bookings[:self.EVENT_COUNT]:
             e = lookup[b.status]
             emojis.append(e)
         self.venue_string = "".join(emojis)
 
         emojis = []
-        for b in self.speaker_bookings[:11]:
+        for b in self.speaker_bookings[:self.EVENT_COUNT]:
             e = lookup[b.status]
             emojis.append(e)
         self.speaker_string = "".join(emojis)
@@ -65,6 +68,7 @@ class BookingsProcessor(object):
             is_emptyish = lambda s: s.lower() in ['tba', 'tbd', '']
 
             venue_booking = Booking()
+            venue_booking.date = date
             if is_emptyish(row['venue']):
                 venue_booking.status = 'unbooked'
             else:
@@ -72,6 +76,7 @@ class BookingsProcessor(object):
             self.venue_bookings.append(venue_booking)
 
             speaker_booking = Booking()
+            speaker_booking.date = date
             if row['name'] or row['org']:
                 speaker_booking.status = 'booked'
                 if 'project update' in row['name'].lower():
@@ -133,6 +138,9 @@ def announce_booking_status(gsheet, channel, slack_token, yes, verbose, debug, n
         'venue_statuses': bookings.venue_string,
         'speaker_statuses': bookings.speaker_string,
         'gsheet_url': 'https://docs.google.com/spreadsheets/d/{}/view#gid={}'.format(spreadsheet_key, worksheet_id),
+        'event_count': bookings.EVENT_COUNT,
+        # Get date of final event and format
+        'final_event_date': bookings.venue_bookings[bookings.EVENT_COUNT-1].date.strftime('%b %-d'),
     }
 
     thread_template = open('templates/announce_booking_status.txt').read()
