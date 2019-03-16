@@ -6,6 +6,7 @@ import hashlib
 import meetup.api
 import pprint
 import pystache
+import random
 import re
 import requests
 import tempfile
@@ -128,8 +129,8 @@ def gsheet2meetup(meetup_api_key, gsheet, meetup_group_slug, yes, verbose, debug
             column with 'x' will send an announcement to group members. (Once per
             event)
 
-        * hosts: Use a comma-separated list of names. Will look for EXACT
-            matches in the list of group leadership.
+        * hosts: Use a comma-separated list of names. For each name, will look
+            in the list of group leadership for EXACT matches, then partial.
 
     If a field is not provided or the column is missing, it will simply be ignored.
 
@@ -388,11 +389,21 @@ def gsheet2meetup(meetup_api_key, gsheet, meetup_group_slug, yes, verbose, debug
                 # Set the event hosts from organizer/leadership group members.
                 r = mclient.GetProfiles(group_urlname=meetup_group_slug, role='leads')
                 lead_profiles = r.results
-                host_names = [h.strip().lower() for h in row['hosts'].split(',')]
-                # Match names with case-insensitivity.
-                host_profiles = [m for m in lead_profiles if m['name'].lower() in host_names]
-                # TODO: If 5 slots to used up, choose random organizers (based on criteria of recent attendance?)
-                host_ids = ','.join([str(m['member_id']) for m in host_profiles])
+                host_ids = []
+                for name in row['hosts'].split(','):
+                    # Match names with case-insensitivity.
+                    profile_matches = [p for p in lead_profiles if name.strip().lower() == p['name'].lower()]
+                    if not profile_matches:
+                        # Partial match if exact not found
+                        profile_matches = [p for p in lead_profiles if name.strip().lower() in p['name'].lower()]
+
+                    if profile_matches:
+                        match = profile_matches.pop()
+                        host_ids.append(str(match['member_id']))
+
+                # Shuffle hosts each time
+                random.shuffle(host_ids)
+                host_ids = ','.join(host_ids)
                 event_data['event_hosts'] = host_ids
 
             # Ensure fields with errors are never sync'd.
