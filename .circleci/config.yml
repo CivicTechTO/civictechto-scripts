@@ -44,9 +44,11 @@ workflows:
 
   post_hacknight:
     jobs:
-      - notify_slack_pitches
-      #- backup_trello
       - save_pitch_data
+      - notify_slack_pitches:
+          requires:
+            - save_pitch_data
+      #- backup_trello
       - announce_booking_status
     triggers:
       - schedule:

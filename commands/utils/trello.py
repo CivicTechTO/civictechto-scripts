@@ -36,29 +36,29 @@ class BreakoutGroup(object):
         dataset_url = 'https://raw.githubusercontent.com/CivicTechTO/dataset-civictechto-breakout-groups/master/data/civictechto-breakout-groups.csv?r={}'.format(self.NONCE)
         r = requests.get(dataset_url)
         csv_content = r.content.decode('utf-8')
-        csv_content = csv_content.split('\r\n')
+        csv_content = csv_content.splitlines()
         reader = csv.DictReader(csv_content, delimiter=',')
-        # TODO: Ensure these are sorted by date.
-        reverse_chron = list(reader)[::-1]
+        all_pitches = list(reader)
+        all_pitches = sorted(all_pitches, key=lambda i: i['date'], reverse=True)
 
         # Tally pitch count.
         self.pitch_count = 0
-        for row in reverse_chron:
+        for row in all_pitches:
             if row['trello_card_id'] == self.card.id:
                 self.pitch_count += 1
 
-        if self.pitch_count == 0:
+        if self.pitch_count == 1:
             self.is_new = True
 
         # Get last pitch date.
-        for row in reverse_chron:
+        for row in all_pitches:
             if row['trello_card_id'] == self.card.id:
                 self.last_pitch_date = datetime.strptime(row['date'], '%Y-%m-%d')
                 break
 
         # Tally streak count.
         self.streak_count = 0
-        for key, group in itertools.groupby(reverse_chron, key=lambda r: r['date']):
+        for key, group in itertools.groupby(all_pitches, key=lambda i: i['date']):
             matches = [p for p in group if p['trello_card_id'] == self.card.id]
             if matches:
                 self.streak_count += 1
