@@ -2,13 +2,25 @@
 
 Yay! Thanks to the pitchers :speaking_head_in_silhouette: who hosted *this week's breakout groups*:
 
-{{#projects}}
-{{#is_new}}:hatching_chick:{{/is_new}}{{^is_new}}:black_small_square:{{/is_new}} *{{{name}}}* {{#chat_room}}| {{.}} {{/chat_room}}{{#pitcher}}| {{.}} {{/pitcher}}{{#streak_count}}| :fire:x{{.}}{{/streak_count}}
-{{/projects}}
+{% for p in projects %}
+  {%- set count = p.pitch_count %}
+  {%- if count >= maturity.level_3 -%}   :owl:
+  {%- elif count >= maturity.level_2 -%} :duck:
+  {%- elif count >= maturity.level_1 -%} :hatched_chick:
+  {%- elif count == maturity.new -%}     :hatching_chick:
+  {%- else -%}                           :black_medium_square:
+  {%- endif %} *{{ p.name }}*
+    {%- if p.chat_room %} | {{ p.chat_room }}{% endif %}
+    {%- if p.pitcher %} | {{ p.pitcher }}{% endif %}
+    {%- if p.streak_count > 1  %} | :fire:x{{ p.streak_count }}{% endif %}
+{% endfor %}
 
 ---
 
-:fire: Pitch Streak
 :hatching_chick: New
+:hatched_chick: {{ maturity.level_1 }}+ Pitches
+:duck: {{ maturity.level_2 }}+ Pitches
+:owl: {{ maturity.level_3 }}+ Pitches
+:fire: Pitch Streak
 
 Curious how this message gets posted? <https://github.com/civictechto/civictechto-scripts#readme|Start here!>

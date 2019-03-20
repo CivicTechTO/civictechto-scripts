@@ -3,6 +3,7 @@ import os
 import pystache
 import re
 import sys
+from jinja2 import Template
 from trello import TrelloClient
 
 from commands.utils.slackclient import CustomSlackClient
@@ -44,7 +45,18 @@ for i, card in enumerate(cards):
     cards[i] = vars(BreakoutGroup(card))
 
 thread_template = open('templates/notify_slack_pitches.txt').read()
-thread_content = pystache.render(thread_template, {'projects': cards})
+template = Template(thread_template)
+context = {
+    'projects': cards,
+    'maturity': {
+        'new': 1,
+        'level_1': 2,
+        'level_2': 5,
+        'level_3': 20,
+    },
+}
+thread_content = template.render(**context)
+
 
 if DEBUG or not SLACK_API_TOKEN:
     print(thread_content)
