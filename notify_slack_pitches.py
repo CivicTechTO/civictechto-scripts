@@ -44,6 +44,9 @@ if len(cards) < 3:
 for i, card in enumerate(cards):
     cards[i] = vars(BreakoutGroup(card))
 
+# Sort newest to top of listing
+cards = sorted(cards, key=lambda i: i['pitch_count'])
+
 thread_template = open('templates/notify_slack_pitches.txt').read()
 template = Template(thread_template)
 context = {
