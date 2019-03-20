@@ -29,7 +29,7 @@ import os
 import pystache
 import pytz
 
-from commands.slackclient import CustomSlackClient
+from commands.utils.slackclient import CustomSlackClient
 
 
 def str2bool(v):

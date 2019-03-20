@@ -5,7 +5,7 @@ import re
 import sys
 from trello import TrelloClient
 
-from commands.slackclient import CustomSlackClient
+from commands.utils.slackclient import CustomSlackClient
 from commands.utils.trello import BreakoutGroup
 
 dirname = os.path.dirname(__file__)

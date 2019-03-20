@@ -6,7 +6,7 @@ import requests
 from datetime import datetime
 
 from commands.common import common_params, parse_gdoc_url, InsensitiveDictReader
-from commands.slackclient import CustomSlackClient
+from commands.utils.slackclient import CustomSlackClient
 
 CONTEXT_SETTINGS = dict(help_option_names=['--help', '-h'])
 
