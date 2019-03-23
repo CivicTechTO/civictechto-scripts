@@ -44,6 +44,9 @@ Here's a diagram showing how project pitch information flows into, through and o
   tasks][circleci-cron] for us in the cloud.
 - [**Trello.**][trello] A flexible organizing and project management
   tool that we [use to track breakout groups][trello-board].
+- [**`CivicTechTO/circleci-job-runner`.**][job-runner] Simple API for starting safe CircleCI jobs via public endpoints.
+
+[job-runner]: https://github.com/CivicTechTO/circleci-job-runner
 
 ## :computer: Local Development
 
