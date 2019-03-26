@@ -192,16 +192,19 @@ def gsheet2rebrandly(rebrandly_api_key, gsheet, domain_name, yes, verbose, debug
             click.echo('Deleted shortlink: '+row['slashtag'])
             continue
 
-        # Extract page title after redirects.
         r = requests.get(row['destination_url'], allow_redirects=True)
-        parser = TitleParser()
-        parser.feed(r.content.decode('utf-8'))
+        if 'text/html' in r.headers['Content-Type']:
+            # Extract page title after redirects.
+            parser = TitleParser()
+            title = parser.feed(r.content.decode('utf-8'))
+        else:
+            title = 'File: '+r.headers['Content-Type']
         payload = {
             'slashtag': row['slashtag'],
             # Don't use url with redirect resolution, because permissioned
             # pages (like Google Docs) will redirect to login page.
             'destination': row['destination_url'],
-            'title': parser.title,
+            'title': title,
         }
         if debug: click.echo('>>> resolved as: ' + pprint.pformat(payload))
 
