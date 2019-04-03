@@ -9,6 +9,7 @@ import textwrap
 import urllib
 
 from commands.common import common_params
+from commands.utils.rebrandly import Rebrandly, AmbiguousCustomDomainError, NoCustomDomainsExistError
 
 CONTEXT_SETTINGS = dict(help_option_names=['--help', '-h'])
 GSHEET_URL_RE = re.compile('https://docs.google.com/spreadsheets/d/([\w_-]+)/(?:edit|view)(?:#gid=([0-9]+))?')
@@ -122,36 +123,22 @@ def gsheet2rebrandly(rebrandly_api_key, gsheet, domain_name, yes, verbose, debug
 
     ### Confirm domain
 
-    r = requests.get('https://api.rebrandly.com/v1/domains',
-                     headers={'apikey': rebrandly_api_key})
-    if r.status_code != requests.codes.ok:
-        raise click.Abort()
-
-    domains = r.json()
-    # Ignore service shortlink domains like rebrand.ly itself.
-    my_domains = [d for d in domains if d['type'].lower() != 'service']
-
-    # If --domain-name provided, check it.
+    rebrandly = Rebrandly(rebrandly_api_key)
     if domain_name:
-        my_domain = [d for d in domains if d['fullName'] == domain_name]
-        if not my_domain:
+        # If --domain-name provided, check it.
+        rebrandly.set_domain_by_name(domain_name)
+        if not rebrandly.default_domain:
             click.echo('Provided domain not attached to account. Exitting...')
             raise click.Abort()
-        domain = my_domain.pop()
-
-    # If --domain-name not provided, try to determine it.
     else:
-        if len(my_domains) > 1:
-            click.echo('More than one domain found. Please specify one via --domain option:')
-            # TODO: Echo domains.
-            raise click.Abort()
-        elif not my_domains:
-            click.echo('No custom domains attached to account. Exiting...')
-            raise click.Abort()
-        else:
-            # Found the domain, and set name.
-            domain = my_domains.pop()
-            domain_name = domain['fullName']
+        try:
+            rebrandly.autodetect_domain()
+        except AmbiguousCustomDomainError:
+            click.echo('More than one domain found. Please specify one via --domain option:', err=True)
+        except NoCustomDomainsExistError:
+            click.echo('No custom domains attached to account. Exiting...', err=True)
+
+        domain_name = rebrandly.default_domain['fullName']
 
     ### Output confirmation to user
 
@@ -167,18 +154,28 @@ def gsheet2rebrandly(rebrandly_api_key, gsheet, domain_name, yes, verbose, debug
         click.echo(textwrap.dedent(confirmation_details))
         click.confirm('Do you want to continue?', abort=True)
 
-    r = requests.get('https://api.rebrandly.com/v1/links',
-                     data={'domain': {'fullName': domain_name}},
-                     headers={'apikey': rebrandly_api_key})
-    if r.status_code != requests.codes.ok:
-        raise click.Abort()
-    links = r.json()
+    # TODO: Move pagination into rebrandly client class.
+    all_links = []
+    first = True
+    last_links = None
+    while first or last_links:
+        payload = {}
+        if last_links:
+            payload.update({'last': last_links[-1]['id']})
+
+        r = rebrandly.get('/links',
+                         data=payload)
+        this_links = r.json()
+        all_links += this_links
+
+        last_links = this_links
+        first = False
 
     # Iterate through CSV content and perform actions on data
     reader = csv.DictReader(csv_content, delimiter=',')
     for row in reader:
-        link = lookup_link(links, row['slashtag'])
-        # TODO: Investigate if possible to trash instead of deleting outright.
+        link = lookup_link(all_links, row['slashtag'])
+        if debug: click.echo(link, err=True)
 
         # If destination_url empty, delete link.
         if not row['destination_url']:
@@ -186,6 +183,7 @@ def gsheet2rebrandly(rebrandly_api_key, gsheet, domain_name, yes, verbose, debug
                 click.echo('Non-existent shortlink: {} (already deleted)'.format(row['slashtag']))
                 continue
 
+            # NOTE: Not possible to "trash", only to fully delete, as per support chat question.
             r = requests.delete('https://api.rebrandly.com/v1/links/'+link['id'],
                                 headers={'apikey': rebrandly_api_key})
             if debug: click.echo(pprint.pformat(r))
@@ -196,6 +194,7 @@ def gsheet2rebrandly(rebrandly_api_key, gsheet, domain_name, yes, verbose, debug
         if 'text/html' in r.headers['Content-Type']:
             # Extract page title after redirects.
             parser = TitleParser()
+            # FIXME: Title parser. Not working.
             title = parser.feed(r.content.decode('utf-8'))
         else:
             title = 'File: '+r.headers['Content-Type']
