@@ -51,9 +51,7 @@ class Rebrandly(object):
     def set_domain_by_name(self, domain_name):
         my_domain = [d for d in self.domains if d['fullName'] == domain_name]
         if my_domain:
-            return my_domain.pop()
-
-        return None
+            self.default_domain = my_domain.pop()
 
     def autodetect_domain(self):
         my_domains = self.get_custom_domains()
