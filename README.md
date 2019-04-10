@@ -22,6 +22,7 @@ tasks. Many of them run automatically each week.
   - [`next-meetup` command](#next-meetup-command)
   - [`upload2gdrive` command](#upload2gdrive-command)
   - [`announce-booking-status` command](#announce-booking-status-command)
+  - [`list_dm_partners.py`](#list_dm_partnerspy)
 - [Local Development](#computer-local-development)
 
 ## About these Automated Scripts
@@ -306,6 +307,37 @@ This take data from the [historical dataset of breakout
 groups][breakout-dataset] (generated via [`update_pitch_csv.py`](#update_pitch_csvpy)), and sends out a MailChimp update once/month, using [this MailChimp template][mailchimp-template].
 
 This is a work in progress, and doesn't yet work or run regularly.
+
+### `list_dm_contacts.py`
+
+```
+$ pipenv run python list_dm_partners.py --help
+
+Usage: list_dm_partners.py [OPTIONS]
+
+  Generates a list of DM conversation partners.
+
+  * Generates a list based on private and group DM's.
+
+  * For ease, the list itself is DM'd to the user account for whom the Slack
+  token was generated.
+
+      * NONE of the mentioned users will be notified of this first message,
+      since it occurs in the DM.
+
+      * This list of usernames can be copied into new messages and modified
+      to suit needs.
+
+Options:
+  --slack-token TEXT  API token for any Slack user.
+  -h, --help          Show this message and exit.
+```
+
+This script doesn't run automatically. It is intended to be run from a
+local computer.
+
+![Screenshot of Slack DM](https://i.imgur.com/Ky5oYB4.png)
+
 
 <!-- Links -->
    [click]: http://click.pocoo.org/5/
