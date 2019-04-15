@@ -311,7 +311,7 @@ intended to be used to render a view of those members on a webpage, etc.
 
    [people-list-parser]: https://github.com/CivicTechTO/people-list-parser
 
-![Screenshot of spreadsheet and rendered grid](/docs/screenshot.png)
+![Screenshot of spreadsheet and rendered grid](https://i.imgur.com/24SPx5k.png)
 
 ```
 $ pipenv run python cli.py update-member-roster --help
