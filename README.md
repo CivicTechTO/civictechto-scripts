@@ -341,7 +341,7 @@ groups][breakout-dataset] (generated via [`update_pitch_csv.py`](#update_pitch_c
 
 This is a work in progress, and doesn't yet work or run regularly.
 
-### `list_dm_contacts.py`
+### `list_dm_partners.py`
 
 ```
 $ pipenv run python list_dm_partners.py --help
