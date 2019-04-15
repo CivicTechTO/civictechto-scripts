@@ -34,6 +34,8 @@ def update_member_roster(gsheet, channel, slack_token, yes, verbose, debug, noop
 
     sc = CustomSlackClient(slack_token)
     res = sc.api_call('conversations.info', channel=channel)
+    # TODO: handle multiple channels
+    # TODO: resolve channels from name
     channel = res['channel']
 
     ### Fetch spreadsheet
@@ -45,11 +47,13 @@ def update_member_roster(gsheet, channel, slack_token, yes, verbose, debug, noop
     r = requests.get(csv_url)
     if r.status_code != requests.codes.ok:
         raise click.Abort()
+    # TODO: Clean up this.
     csv_content = r.content.decode('utf-8')
     csv_content = csv_content.split('\r\n')
 
     ### Confirm spreadsheet title
 
+    # TODO: Move this into class.
     cd_header = r.headers.get('Content-Disposition')
     # See: https://tools.ietf.org/html/rfc5987#section-3.2.1 (ext-value definition)
     m = re.search("filename\*=(?P<charset>.+)'(?P<language>.*)'(?P<filename>.+)", cd_header)
@@ -73,6 +77,7 @@ def update_member_roster(gsheet, channel, slack_token, yes, verbose, debug, noop
         click.confirm('Do you want to continue?', abort=True)
 
     if noop:
+        # TODO: Add no-op.
         raise NotImplementedError
 
     gspread = CustomGSpread()
@@ -83,6 +88,7 @@ def update_member_roster(gsheet, channel, slack_token, yes, verbose, debug, noop
     col_count = len(headers)
     cell_list = wsheet.range(1, 1, row_count, col_count)
 
+    # TODO: Move member search into class.
     res = sc.api_call('conversations.members', channel=channel['id'])
     member_ids = res['members']
     members = []
