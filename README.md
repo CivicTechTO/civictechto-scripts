@@ -304,10 +304,10 @@ This command runs weekly after hacknight.
 
 ### `update-member-roster` command
 
-Updates a spreadsheet from membership in a Slack channel, which is in
-turn intended to be used to generate a view of those persons in
-webpages, etc. (Related:
-[`CivicTechTO/people-list-parser`][people-list-parser])
+Updates a spreadsheet from membership in a Slack channel (in our case,
+the invite-only `#organizing-priv`). This spreadsheet is in turn
+intended to be used to render a view of those members on a webpage, etc.
+(Related: [`CivicTechTO/people-list-parser`][people-list-parser])
 
    [people-list-parser]: https://github.com/CivicTechTO/people-list-parser
 
@@ -332,7 +332,7 @@ Options:
   -h, --help          Show this message and exit.
 ```
 
-Note: Does not currently run.
+Note: Runs nightly.
 
 ### `send_monthly_project_email.py`
 

@@ -10,6 +10,7 @@ workflows:
     jobs:
       - update_meetup
       - update_shortlinks
+      - update_member_roster
     triggers:
       - schedule:
           # Every night at 4am ET
@@ -273,6 +274,22 @@ jobs:
             pipenv run python cli.py announce-booking-status \
               --channel "C4SHX39B2" \
               --gsheet "https://docs.google.com/spreadsheets/d/1-p0CyUMC0nqrEQNc6Yikd2vg033GoChSWR8rFKFxfgU/edit#gid=0" \
+
+  update_member_roster:
+    <<: *default_job
+    steps:
+      - checkout
+      - run: {<<: *decrypt_files}
+      - restore_cache: {<<: *restore_cache}
+      - run: {<<: *install_dependencies}
+      - save_cache: {<<: *save_cache}
+      - run:
+          name: run script
+          command: |
+            # Update roster from #organizing-priv
+            pipenv run python cli.py update-member-roster --yes \
+              --channel "G08V58H6Y" \
+              --gsheet "https://docs.google.com/spreadsheets/d/1LCVxEXuv70R-NozOwhNxZFtTZUmn1FLMPVD5wgIor9o/edit#gid=642523045" \
 
   # Doesn't yet run in workflow
   email_monthly_update:
