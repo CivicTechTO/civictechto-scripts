@@ -64,7 +64,7 @@ def update_member_roster(gsheet, channel, slack_token, yes, verbose, debug, noop
 
     ### Output confirmation to user
 
-    if not yes:
+    if verbose or not yes:
         confirmation_details = """\
             We are using the following configuration:
               * Slack Channel:           #{channel}
@@ -74,6 +74,8 @@ def update_member_roster(gsheet, channel, slack_token, yes, verbose, debug, noop
               # Get from the file download name.
         confirmation_details = confirmation_details.format(channel=channel['name'], url=gsheet, name=filename)
         click.echo(textwrap.dedent(confirmation_details))
+
+    if not yes:
         click.confirm('Do you want to continue?', abort=True)
 
     if noop:

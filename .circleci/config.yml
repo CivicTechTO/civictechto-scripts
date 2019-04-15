@@ -287,7 +287,7 @@ jobs:
           name: run script
           command: |
             # Update roster from #organizing-priv
-            pipenv run python cli.py update-member-roster --yes \
+            pipenv run python cli.py update-member-roster --yes --verbose \
               --channel "G08V58H6Y" \
               --gsheet "https://docs.google.com/spreadsheets/d/1LCVxEXuv70R-NozOwhNxZFtTZUmn1FLMPVD5wgIor9o/edit#gid=642523045" \
 
