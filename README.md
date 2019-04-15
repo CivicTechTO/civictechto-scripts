@@ -22,6 +22,7 @@ tasks. Many of them run automatically each week.
   - [`next-meetup` command](#next-meetup-command)
   - [`upload2gdrive` command](#upload2gdrive-command)
   - [`announce-booking-status` command](#announce-booking-status-command)
+  - [`update-member-roster` command](#update-member-roster-command)
   - [`list_dm_partners.py`](#list_dm_partnerspy)
 - [Local Development](#computer-local-development)
 
@@ -301,6 +302,38 @@ Options:
 This command runs weekly after hacknight.
 
 
+### `update-member-roster` command
+
+Updates a spreadsheet from membership in a Slack channel (in our case,
+the invite-only `#organizing-priv`). This spreadsheet is in turn
+intended to be used to render a view of those members on a webpage, etc.
+(Related: [`CivicTechTO/people-list-parser`][people-list-parser])
+
+   [people-list-parser]: https://github.com/CivicTechTO/people-list-parser
+
+![Screenshot of spreadsheet and rendered grid](https://i.imgur.com/24SPx5k.png)
+
+```
+$ pipenv run python cli.py update-member-roster --help
+Usage: cli.py update-member-roster [OPTIONS]
+
+  Update a spreadsheet of members based on Slack channel membership.
+
+Options:
+  --gsheet TEXT       URL to publicly readable Google Spreadsheet.
+[required]
+  --slack-token TEXT  API token for any Slack user.
+  -c, --channel TEXT  Name or ID of Slack channel in which to fetch
+                      membership.  [required]
+  -y, --yes           Skip confirmation prompts
+  -v, --verbose       Show output for each action
+  -d, --debug         Show full debug output
+  --noop              Skip API calls that change/destroy data
+  -h, --help          Show this message and exit.
+```
+
+Note: Runs nightly.
+
 ### `send_monthly_project_email.py`
 
 This take data from the [historical dataset of breakout
@@ -308,7 +341,7 @@ groups][breakout-dataset] (generated via [`update_pitch_csv.py`](#update_pitch_c
 
 This is a work in progress, and doesn't yet work or run regularly.
 
-### `list_dm_contacts.py`
+### `list_dm_partners.py`
 
 ```
 $ pipenv run python list_dm_partners.py --help
