@@ -6,6 +6,19 @@ class CustomSlackClient(SlackClient):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+    def get_user_members(self, channel_id):
+        res = self.api_call('conversations.members', channel=channel_id)
+        member_ids = res['members']
+        members = []
+        for mid in member_ids:
+            res = self.api_call('users.info', user=mid)
+            m = res['user']
+            if m['is_bot']:
+                continue
+            members.append(m)
+
+        return members
+
     def bot_message(self, channel, text, thread_ts=None):
         kwargs = {
             'channel': channel,

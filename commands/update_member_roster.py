@@ -88,16 +88,7 @@ def update_member_roster(gsheet, channel, slack_token, yes, verbose, debug, noop
     col_count = len(headers)
     cell_list = wsheet.range(1, 1, row_count, col_count)
 
-    # TODO: Move member search into class.
-    res = sc.api_call('conversations.members', channel=channel['id'])
-    member_ids = res['members']
-    members = []
-    for mid in member_ids:
-        res = sc.api_call('users.info', user=mid)
-        member = res['user']
-        if member['is_bot']:
-            continue
-        members += [member]
+    members = sc.get_user_members(channel['id'])
 
     for m in members:
         try:
