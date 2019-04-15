@@ -304,12 +304,13 @@ This command runs weekly after hacknight.
 
 ### `update-member-roster` command
 
-Updates a spreadsheet from membership in a Slack channel (in our case,
+Updates a spreadsheet ([example][roster-example]) from membership in a Slack channel (in our case,
 the invite-only `#organizing-priv`). This spreadsheet is in turn
 intended to be used to render a view of those members on a webpage, etc.
 (Related: [`CivicTechTO/people-list-parser`][people-list-parser])
 
    [people-list-parser]: https://github.com/CivicTechTO/people-list-parser
+   [roster-example]: https://docs.google.com/spreadsheets/d/1LCVxEXuv70R-NozOwhNxZFtTZUmn1FLMPVD5wgIor9o/edit#gid=642523045
 
 ![Screenshot of spreadsheet and rendered grid](https://i.imgur.com/24SPx5k.png)
 
