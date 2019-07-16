@@ -4,6 +4,7 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import os
 import pystache
+import re
 from slackclient import SlackClient
 
 
@@ -34,18 +35,14 @@ header_row = worksheet.row_values(1)
 this_month_col = header_row.index(this_month) + 1
 this_month_roles = worksheet.col_values(this_month_col)
 roles_col = worksheet.col_values(1)
-data = dict(zip(roles_col, this_month_roles))
-for k,v in list(data.items()):
-    if not k and not v:
-        del data[k]
-    if k.lower() in ['leads wrangler', 'transparency wrangler', 'venue booking', 'speaker booking']:
-        del data[k]
-    if k.lower() == 'role':
-        del data[k]
-    if k.lower() == 'venue':
-        del data[k]
-    if k and not v:
-        data[k] = 'HALP WANTED :woman-raising-hand: <-- You?'
+term_col = worksheet.col_values(2)
+data = {}
+for i in range(len(term_col)):
+    if re.match(r"1 ?mo.*", term_col[i]):
+        if this_month_roles[i]:
+            data.update({roles_col[i]: this_month_roles[i]})
+        else:
+            data.update({roles_col[i]: 'HALP WANTED :woman-raising-hand: <-- You?'})
 
 mustache_data = [{"role": k, "organizer": v} for k,v in data.items()]
 
