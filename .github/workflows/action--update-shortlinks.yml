@@ -27,8 +27,8 @@ jobs:
       - run: pipenv sync --dev
 
       - env:
-          TRELLO_SECRET: ${{ secrets.TRELLO_SECRET }}
-        run: openssl aes-256-cbc -k "$TRELLO_SECRET" -in service-key.json.enc -out service-key.json -d
+          FILE_ENCRYPTION_PASSWORD: ${{ secrets.ZOOM_API_SECRET }}
+        run: openssl aes-256-cbc -k "$FILE_ENCRYPTION_PASSWORD" -in service-key.json.enc -out service-key.json -d
 
       - env:
           CTTO_REBRANDLY_API_KEY: ${{ secrets.CTTO_REBRANDLY_API_KEY }}
