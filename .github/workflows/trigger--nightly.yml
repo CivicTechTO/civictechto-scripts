@@ -1,0 +1,9 @@
+name: Nightly
+
+on:
+  schedule:
+    # Every night at 4am ET
+    # See: https://crontab.guru/#0_9_*_*_*
+    - cron: '0 9 * * *'
+  repository_dispatch:
+    types: [force-nightly]

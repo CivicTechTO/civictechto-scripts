@@ -1,0 +1,38 @@
+name: Update Shortlinks
+
+on:
+  workflow_run:
+    workflows: [Nightly]
+    types: [completed]
+
+jobs:
+  update-shortlinks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.local/share/virtualenvs
+          key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pipenv-
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - run: pip install pipenv
+
+      - run: pipenv sync --dev
+
+      - env:
+          TRELLO_SECRET: ${{ secrets.TRELLO_SECRET }}
+        run: openssl aes-256-cbc -k "$TRELLO_SECRET" -in service-key.json.enc -out service-key.json -d
+
+      - env:
+          CTTO_REBRANDLY_API_KEY: ${{ secrets.CTTO_REBRANDLY_API_KEY }}
+        run: |
+          pipenv run python gsheet2shortlinks.py --yes \
+            --domain-name "link.civictech.ca" \
+            --gsheet "https://docs.google.com/spreadsheets/d/1LCVxEXuv70R-NozOwhNxZFtTZUmn1FLMPVD5wgIor9o/edit#gid=776462093"
