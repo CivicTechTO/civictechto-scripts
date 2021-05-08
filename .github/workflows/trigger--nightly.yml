@@ -7,3 +7,9 @@ on:
     - cron: '0 9 * * *'
   repository_dispatch:
     types: [force-nightly]
+
+jobs:
+  noop:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo This workflow is just a placeholder to trigger others...
