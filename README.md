@@ -28,11 +28,14 @@ tasks. Many of them run automatically each week.
 |-------------|---------------------|--------------------|
 | Update Shortlinks | [`gsheet2shortlinks.py`](#gsheet2shortlinkspy) | [![Logs: Update Shortlinks][shortlinks-badge]][shortlinks-logs]
 | Notify Slack Roles | [`notify_slack_roles.py`](#notify_slack_rolespy) | [![Logs: Notify Slack Roles][roles-badge]][roles-logs]
+| Reset Pitches | [`move_trello_cards.py`](#move_trello_cardspy) | [![Logs: Reset Pitches][reset-badge]][reset-logs]
 
    [shortlinks-badge]: https://github.com/CivicTechTO/civictechto-scripts/actions/workflows/action--update-shortlinks.yml/badge.svg
    [shortlinks-logs]: https://github.com/CivicTechTO/civictechto-scripts/actions/workflows/action--update-shortlinks.yml
    [roles-badge]: https://github.com/CivicTechTO/civictechto-scripts/actions/workflows/action--notify-slack-roles.yml/badge.svg
    [roles-logs]: https://github.com/CivicTechTO/civictechto-scripts/actions/workflows/action--notify-slack-roles.yml
+   [reset-badge]: https://github.com/CivicTechTO/civictechto-scripts/actions/workflows/action--reset-pitches.yml/badge.svg
+   [reset-logs]: https://github.com/CivicTechTO/civictechto-scripts/actions/workflows/action--reset-pitches.yml
 
 ## About these Automated Scripts
 

@@ -1,0 +1,15 @@
+name: Pre-Hacknight
+
+on:
+  schedule:
+    # Every Tues evening at 6pm ET (22:00 UTC)
+    # See: https://crontab.guru/#0_22_*_*_2
+    - cron: '0 22 * * 2'
+  repository_dispatch:
+    types: [force-pre-hacknight]
+
+jobs:
+  noop:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo This workflow is just a placeholder to trigger others...
