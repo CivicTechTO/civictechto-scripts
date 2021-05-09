@@ -1,0 +1,15 @@
+name: Day Before
+
+on:
+  schedule:
+    # Every Monday evening at 6pm ET (22:00 UTC)
+    # See: https://crontab.guru/#0_22_*_*_1
+    - cron: '0 22 * * 1'
+  repository_dispatch:
+    types: [force-day-before]
+
+jobs:
+  noop:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo This workflow is just a placeholder to trigger others...

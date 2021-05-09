@@ -10,3 +10,6 @@ update-shortlinks:
 	pipenv run python gsheet2shortlinks.py --yes \
 		--domain-name "link.civictech.ca" \
 		--gsheet "https://docs.google.com/spreadsheets/d/1LCVxEXuv70R-NozOwhNxZFtTZUmn1FLMPVD5wgIor9o/edit#gid=776462093"
+
+notify-slack-roles:
+	pipenv run python notify_slack_roles.py

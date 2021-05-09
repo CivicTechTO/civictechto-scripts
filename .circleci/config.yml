@@ -20,7 +20,6 @@ workflows:
 
   day_before:
     jobs:
-      - notify_slack_roles
       - create_attendee_flashcards
     triggers:
       - schedule:
@@ -185,19 +184,6 @@ jobs:
           name: run script
           command: |
             pipenv run python notify_slack_pitches.py
-
-  notify_slack_roles:
-    <<: *default_job
-    steps:
-      - checkout
-      - run: {<<: *decrypt_files}
-      - restore_cache: {<<: *restore_cache}
-      - run: {<<: *install_dependencies}
-      - save_cache: {<<: *save_cache}
-      - run:
-          name: run script
-          command: |
-            pipenv run python notify_slack_roles.py
 
   update_meetup:
     <<: *default_job

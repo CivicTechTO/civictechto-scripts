@@ -1,12 +1,12 @@
-name: Update Shortlinks
+name: Notify Slack Roles
 
 on:
   workflow_run:
-    workflows: ["Nightly"]
+    workflows: ["Day Before"]
     types: [requested]
 
 jobs:
-  update-shortlinks:
+  notify-slack-roles:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -31,8 +31,8 @@ jobs:
         run: make decrypt PASSWORD=$FILE_ENCRYPTION_PASSWORD
 
       - env:
-          CTTO_REBRANDLY_API_KEY: ${{ secrets.CTTO_REBRANDLY_API_KEY }}
-        run: |
-          pipenv run python gsheet2shortlinks.py --yes \
-            --domain-name "link.civictech.ca" \
-            --gsheet "https://docs.google.com/spreadsheets/d/1LCVxEXuv70R-NozOwhNxZFtTZUmn1FLMPVD5wgIor9o/edit#gid=776462093"
+          SLACK_API_TOKEN: ${{ secrets.SLACK_API_TOKEN }}
+          # For channel: #organizing-open
+          SLACK_ANNOUNCE_CHANNEL_ORG: C4SHX39B2
+        run:
+          make notify-slack-roles
