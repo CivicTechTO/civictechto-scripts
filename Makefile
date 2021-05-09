@@ -19,3 +19,6 @@ reset-pitches:
 	pipenv run python move_trello_cards.py --verbose \
 		--from-list "58e158f29b0ae02ab71b9a87" \
 		--to-list "58e158eba6846a4fb012404c" \
+
+save-pitch-data:
+	pipenv run python update_pitch_csv.py

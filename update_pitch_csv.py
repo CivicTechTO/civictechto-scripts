@@ -21,15 +21,10 @@ def str2bool(v):
   return v.lower() in ("yes", "true", "t", "1")
 
 DEBUG = str2bool(os.getenv('DEBUG', ''))
-TRELLO_APP_KEY = os.getenv('TRELLO_APP_KEY')
-TRELLO_SECRET = os.getenv('TRELLO_SECRET')
-GITHUB_TOKEN = os.getenv('GITHUB_ACCESS_TOKEN')
+GITHUB_TOKEN = os.getenv('GH_PERSONAL_ACCESS_TOKEN')
 LIST_TONIGHT = "Tonight's Pitches"
 
-client = TrelloClient(
-    api_key=TRELLO_APP_KEY,
-    api_secret=TRELLO_SECRET,
-)
+client = TrelloClient(None)
 
 board_url = 'https://trello.com/b/EVvNEGK5/hacknight-projects'
 m = re.search('^https://trello.com/b/(?P<board_id>.+?)(?:/.*)?$', board_url)

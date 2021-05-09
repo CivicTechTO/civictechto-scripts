@@ -1,0 +1,36 @@
+name: Save Pitch Data
+
+on:
+  workflow_run:
+    workflows: ["Post-Hacknight"]
+    types: [requested]
+
+jobs:
+  notify-slack-pitches:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.local/share/virtualenvs
+          key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pipenv-
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.6'
+
+      - run: pip install pipenv
+
+      - run: pipenv sync --dev
+
+      - env:
+          FILE_ENCRYPTION_PASSWORD: ${{ secrets.ZOOM_API_SECRET }}
+        run: make decrypt PASSWORD=$FILE_ENCRYPTION_PASSWORD
+
+      - env:
+          GH_PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+        run:
+          make save-pitch-data

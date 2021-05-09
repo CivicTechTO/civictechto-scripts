@@ -42,10 +42,7 @@ workflows:
 
   post_hacknight:
     jobs:
-      - save_pitch_data
       - notify_slack_pitches:
-          requires:
-            - save_pitch_data
       #- backup_trello
       - announce_booking_status
     triggers:
@@ -141,19 +138,6 @@ jobs:
           name: run script
           command: |
             pipenv run python backup_trello.py
-
-  save_pitch_data:
-    <<: *default_job
-    steps:
-      - checkout
-      - run: {<<: *decrypt_files}
-      - restore_cache: {<<: *restore_cache}
-      - run: {<<: *install_dependencies}
-      - save_cache: {<<: *save_cache}
-      - run:
-          name: run script
-          command: |
-            pipenv run python update_pitch_csv.py
 
   notify_slack_pitches:
     <<: *default_job

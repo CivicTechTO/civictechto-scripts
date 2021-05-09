@@ -12,8 +12,6 @@ tasks. Many of them run automatically each week.
 - [About This Repo](#about-these-automated-scripts)
 - [Technologies Used](#technologies-used)
 - **Scripts**
-  - [`move_trello_cards.py`](#move_trello_cardspy)
-  - [`update_pitch_csv.py`](#update_pitch_csvpy)
   - [`notify_slack_pitches.py`](#notify_slack_pitchespy)
   - [`gsheet2meetup.py`](#gsheet2meetuppy)
   - [`send_monthly_project_email.py`](#send_monthly_project_emailpy)
@@ -24,11 +22,12 @@ tasks. Many of them run automatically each week.
   - [`list_dm_partners.py`](#list_dm_partnerspy)
 - [Local Development](#computer-local-development)
 
-| Description | Script :link: Docs | Status :link: Logs |
-|-------------|---------------------|--------------------|
-| Update Shortlinks | [`gsheet2shortlinks.py`](#gsheet2shortlinkspy) | [![Logs: Update Shortlinks][shortlinks-badge]][shortlinks-logs]
-| Notify Slack Roles | [`notify_slack_roles.py`](#notify_slack_rolespy) | [![Logs: Notify Slack Roles][roles-badge]][roles-logs]
-| Reset Pitches | [`move_trello_cards.py`](#move_trello_cardspy) | [![Logs: Reset Pitches][reset-badge]][reset-logs]
+| Trigger | Description | Script :link: Docs | Status :link: Logs |
+|---------|-------------|---------------------|--------------------|
+| Nightly | Update Shortlinks | [`gsheet2shortlinks.py`](#gsheet2shortlinkspy) | [![Logs: Update Shortlinks][shortlinks-badge]][shortlinks-logs]
+| Day Before | Notify Slack Roles | [`notify_slack_roles.py`](#notify_slack_rolespy) | [![Logs: Notify Slack Roles][roles-badge]][roles-logs]
+| Pre-Hacknight | Reset Pitches | [`move_trello_cards.py`](#move_trello_cardspy) | [![Logs: Reset Pitches][reset-badge]][reset-logs]
+| Post-Hacknight | Save Pitch Data | [`update_pitch_csv.py`](#update_pitch_csvpy) | [![Logs: Save Pitch Data][data-badge]][data-logs]
 
    [shortlinks-badge]: https://github.com/CivicTechTO/civictechto-scripts/actions/workflows/action--update-shortlinks.yml/badge.svg
    [shortlinks-logs]: https://github.com/CivicTechTO/civictechto-scripts/actions/workflows/action--update-shortlinks.yml
@@ -36,6 +35,8 @@ tasks. Many of them run automatically each week.
    [roles-logs]: https://github.com/CivicTechTO/civictechto-scripts/actions/workflows/action--notify-slack-roles.yml
    [reset-badge]: https://github.com/CivicTechTO/civictechto-scripts/actions/workflows/action--reset-pitches.yml/badge.svg
    [reset-logs]: https://github.com/CivicTechTO/civictechto-scripts/actions/workflows/action--reset-pitches.yml
+   [data-badge]: https://github.com/CivicTechTO/civictechto-scripts/actions/workflows/action--save-pitch-data.yml/badge.svg
+   [data-logs]: https://github.com/CivicTechTO/civictechto-scripts/actions/workflows/action--save-pitch-data.yml
 
 ## About these Automated Scripts
 
