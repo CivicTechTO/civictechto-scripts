@@ -190,14 +190,20 @@ def gsheet2rebrandly(rebrandly_api_key, gsheet, domain_name, yes, verbose, debug
             click.echo('Deleted shortlink: '+row['slashtag'])
             continue
 
-        r = requests.get(row['destination_url'], allow_redirects=True)
-        if 'text/html' in r.headers['Content-Type']:
-            # Extract page title after redirects.
-            parser = TitleParser()
-            # FIXME: Title parser. Not working.
-            title = parser.feed(r.content.decode('utf-8'))
-        else:
-            title = 'File: '+r.headers['Content-Type']
+
+        # Sometimes requests gets blocked
+        try:
+            r = requests.get(row['destination_url'], allow_redirects=True)
+            if 'text/html' in r.headers['Content-Type']:
+                # Extract page title after redirects.
+                parser = TitleParser()
+                # FIXME: Title parser. Not working.
+                title = parser.feed(r.content.decode('utf-8'))
+            else:
+                title = 'File: '+r.headers['Content-Type']
+        except requests.ConnectionError:
+            title = ''
+
         payload = {
             'slashtag': row['slashtag'],
             # Don't use url with redirect resolution, because permissioned
