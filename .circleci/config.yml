@@ -31,7 +31,6 @@ workflows:
 
   pre_hacknight:
     jobs:
-      - reset_pitches
       - move_stale_pitches
     triggers:
       - schedule:
@@ -112,22 +111,6 @@ jobs:
           paths:
             - ~/.local
             - ~/.cache
-
-  reset_pitches:
-    <<: *default_job
-    steps:
-      - checkout
-      - run: {<<: *decrypt_files}
-      - restore_cache: {<<: *restore_cache}
-      - run: {<<: *install_dependencies}
-      - save_cache: {<<: *save_cache}
-      - run:
-          name: run script
-          command: |
-            # Move from list "Tonight's Pitches" to "Recent Pitches"
-            pipenv run python move_trello_cards.py --verbose \
-              --from-list "58e158f29b0ae02ab71b9a87" \
-              --to-list "58e158eba6846a4fb012404c" \
 
   move_stale_pitches:
     <<: *default_job
