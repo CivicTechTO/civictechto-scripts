@@ -28,7 +28,7 @@ jobs:
 
       - env:
           FILE_ENCRYPTION_PASSWORD: ${{ secrets.ZOOM_API_SECRET }}
-        run: make decrypt PASSWORD=$FILE_ENCRYPTION_PASSWORD
+        run: make decrypt-gpg PASSWORD=$FILE_ENCRYPTION_PASSWORD
 
       - env:
           CTTO_REBRANDLY_API_KEY: ${{ secrets.CTTO_REBRANDLY_API_KEY }}
