@@ -17,7 +17,6 @@ tasks. Many of them run automatically each week.
   - [`notify_slack_pitches.py`](#notify_slack_pitchespy)
   - [`notify_slack_roles.py`](#notify_slack_rolespy)
   - [`gsheet2meetup.py`](#gsheet2meetuppy)
-  - [`gsheet2shortlinks.py`](#gsheet2shortlinkspy)
   - [`send_monthly_project_email.py`](#send_monthly_project_emailpy)
   - [`next-meetup` command](#next-meetup-command)
   - [`upload2gdrive` command](#upload2gdrive-command)
@@ -26,11 +25,19 @@ tasks. Many of them run automatically each week.
   - [`list_dm_partners.py`](#list_dm_partnerspy)
 - [Local Development](#computer-local-development)
 
+| Description | Script :link: Docs | Status :link: Logs |
+|-------------|---------------------|--------------------|
+| Update Shortlinks | [`gsheet2shortlinks.py`](#gsheet2shortlinkspy) | [![Logs: Update Shortlinks][shortlinks-badge]][shortlinks-logs]
+
+   [shortlinks-badge]: https://github.com/CivicTechTO/civictechto-scripts/actions/workflows/action--update-shortlinks.yml/badge.svg
+   [shortlinks-logs]: https://github.com/CivicTechTO/civictechto-scripts/actions/workflows/action--update-shortlinks.yml
+
 ## About these Automated Scripts
 
 Some of these scripts are automatically run before and after hacknight,
-using CircleCI's workflow feature. The schedule is set in the
-[`.circleci/config.yml`][circleci-config] file within this repo.
+using CircleCI's workflow feature.
+(Update: A migration from CircleCI to GitHub Actions is in progress.)
+The schedule is set in the [`.circleci/config.yml`][circleci-config] file within this repo.
 
 Here's a diagram showing how project pitch information flows into, through and out of the Trello board, in part via scripts:
 
@@ -43,12 +50,14 @@ Here's a diagram showing how project pitch information flows into, through and o
 - [**Click.**][click] A Python library for writing simple command-line
   tools.
 - [**CircleCI.**][circleci] A script-running service that [runs scheduled
-  tasks][circleci-cron] for us in the cloud.
+  tasks][circleci-cron] for us in the cloud. (Deprecated)
+- [**GitHub Actions.**][github-actions] A script-running service that runs scheduled tasks for us in the cloud. (Incoming)
 - [**Trello.**][trello] A flexible organizing and project management
   tool that we [use to track breakout groups][trello-board].
-- [**`CivicTechTO/circleci-job-runner`.**][job-runner] Simple API for starting safe CircleCI jobs via public endpoints.
+- [**`CivicTechTO/circleci-job-runner`.**][job-runner] Simple API for starting safe CircleCI jobs via public endpoints. (Needs update)
 
 [job-runner]: https://github.com/CivicTechTO/circleci-job-runner
+[github-actions]: https://github.com/features/actions
 
 ## :computer: Local Development
 

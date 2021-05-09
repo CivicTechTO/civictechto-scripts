@@ -9,7 +9,6 @@ workflows:
   nightly:
     jobs:
       - update_meetup
-      - update_shortlinks
       - update_member_roster
     triggers:
       - schedule:
@@ -215,22 +214,6 @@ jobs:
             pipenv run python scripts/gsheet2meetup.py --yes --verbose \
               --meetup-group-slug "Civic-Tech-Toronto" \
               --gsheet "https://docs.google.com/spreadsheets/d/1-p0CyUMC0nqrEQNc6Yikd2vg033GoChSWR8rFKFxfgU/edit#gid=1209202081"
-
-  update_shortlinks:
-    <<: *default_job
-    steps:
-      - checkout
-      - run: {<<: *decrypt_files}
-      - restore_cache: {<<: *restore_cache}
-      - run: {<<: *install_dependencies}
-      - save_cache: {<<: *save_cache}
-      - run:
-          name: run script
-          # Rebrandly key set as envvar CTTO_REBRANDLY_API_KEY
-          command: |
-            pipenv run python gsheet2shortlinks.py --yes \
-              --domain-name "link.civictech.ca" \
-              --gsheet "https://docs.google.com/spreadsheets/d/1LCVxEXuv70R-NozOwhNxZFtTZUmn1FLMPVD5wgIor9o/edit#gid=776462093"
 
   # Doesn't yet run in workflow
   create_attendee_flashcards:
