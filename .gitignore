@@ -1,4 +1,6 @@
 .env
 *.csv
 service-key.json
+.youtube-upload-credentials.json
+client_secret.json
 outputs/

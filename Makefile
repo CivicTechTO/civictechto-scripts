@@ -1,10 +1,14 @@
 PASSWORD = $$ZOOM_API_SECRET
 
 encrypt:
-	gpg --batch --yes --passphrase="${PASSWORD}" --symmetric --cipher-algo AES256 service-key.json
+	pipenv run gpg --batch --yes --passphrase="${PASSWORD}" --symmetric --cipher-algo AES256 service-key.json
+	pipenv run gpg --batch --yes --passphrase="${PASSWORD}" --symmetric --cipher-algo AES256 client_secret.json
+	pipenv run gpg --batch --yes --passphrase="${PASSWORD}" --symmetric --cipher-algo AES256 .youtube-upload-credentials.json
 
 decrypt:
 	gpg --batch --yes --passphrase="${PASSWORD}" --decrypt --output service-key.json service-key.json.gpg
+	gpg --batch --yes --passphrase="${PASSWORD}" --decrypt --output client_secret.json client_secret.json.gpg
+	gpg --batch --yes --passphrase="${PASSWORD}" --decrypt --output .youtube-upload-credentials.json .youtube-upload-credentials.json.gpg
 
 update-shortlinks:
 	pipenv run python gsheet2shortlinks.py --yes \
