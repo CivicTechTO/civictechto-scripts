@@ -19,14 +19,10 @@ def str2bool(v):
 DEBUG = str2bool(os.getenv('DEBUG', ''))
 SLACK_API_TOKEN = os.getenv('SLACK_API_TOKEN')
 SLACK_ANNOUNCE_CHANNEL = os.getenv('SLACK_ANNOUNCE_CHANNEL_PUB')
-TRELLO_APP_KEY = os.getenv('TRELLO_APP_KEY')
-TRELLO_SECRET = os.getenv('TRELLO_SECRET')
 LIST_TONIGHT = "Tonight's Pitches"
 
-client = TrelloClient(
-    api_key=TRELLO_APP_KEY,
-    api_secret=TRELLO_SECRET,
-)
+# No API key needed for read-only.
+client = TrelloClient(None)
 
 board_url = 'https://trello.com/b/EVvNEGK5/hacknight-projects'
 m = re.search('^https://trello.com/b/(?P<board_id>.+?)(?:/.*)?$', board_url)

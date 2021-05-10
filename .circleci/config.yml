@@ -42,7 +42,6 @@ workflows:
 
   post_hacknight:
     jobs:
-      - notify_slack_pitches:
       #- backup_trello
       - announce_booking_status
     triggers:
@@ -138,19 +137,6 @@ jobs:
           name: run script
           command: |
             pipenv run python backup_trello.py
-
-  notify_slack_pitches:
-    <<: *default_job
-    steps:
-      - checkout
-      - run: {<<: *decrypt_files}
-      - restore_cache: {<<: *restore_cache}
-      - run: {<<: *install_dependencies}
-      - save_cache: {<<: *save_cache}
-      - run:
-          name: run script
-          command: |
-            pipenv run python notify_slack_pitches.py
 
   update_meetup:
     <<: *default_job

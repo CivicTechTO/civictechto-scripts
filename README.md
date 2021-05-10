@@ -24,10 +24,11 @@ tasks. Many of them run automatically each week.
 
 | Trigger | Description | Script :link: Docs | Status :link: Logs |
 |---------|-------------|---------------------|--------------------|
-| Nightly | Update Shortlinks | [`gsheet2shortlinks.py`](#gsheet2shortlinkspy) | [![Logs: Update Shortlinks][shortlinks-badge]][shortlinks-logs]
-| Day Before | Notify Slack Roles | [`notify_slack_roles.py`](#notify_slack_rolespy) | [![Logs: Notify Slack Roles][roles-badge]][roles-logs]
-| Pre-Hacknight | Reset Pitches | [`move_trello_cards.py`](#move_trello_cardspy) | [![Logs: Reset Pitches][reset-badge]][reset-logs]
-| Post-Hacknight | Save Pitch Data | [`update_pitch_csv.py`](#update_pitch_csvpy) | [![Logs: Save Pitch Data][data-badge]][data-logs]
+| Nightly | Update shortlinks from gsheet | [`gsheet2shortlinks.py`](#gsheet2shortlinkspy) | [![Logs: Update Shortlinks][shortlinks-badge]][shortlinks-logs]
+| Day Before | Announce roles in #organizing-open | [`notify_slack_roles.py`](#notify_slack_rolespy) | [![Logs: Notify Slack Roles][roles-badge]][roles-logs]
+| Pre-Hacknight | Reset Trello pitch column | [`move_trello_cards.py`](#move_trello_cardspy) | [![Logs: Reset Pitches][reset-badge]][reset-logs]
+| Post-Hacknight | Save pitch info to dataset | [`update_pitch_csv.py`](#update_pitch_csvpy) | [![Logs: Save Pitch Data][data-badge]][data-logs]
+| Save Pitch Data | Announce pitches in #general | [`notify_slack_pitches.py`](#notify_slack_pitchespy) | [![Logs: Notify Slack Pitches][pitches-badge]][pitches-logs]
 
    [shortlinks-badge]: https://github.com/CivicTechTO/civictechto-scripts/actions/workflows/action--update-shortlinks.yml/badge.svg
    [shortlinks-logs]: https://github.com/CivicTechTO/civictechto-scripts/actions/workflows/action--update-shortlinks.yml
@@ -37,6 +38,8 @@ tasks. Many of them run automatically each week.
    [reset-logs]: https://github.com/CivicTechTO/civictechto-scripts/actions/workflows/action--reset-pitches.yml
    [data-badge]: https://github.com/CivicTechTO/civictechto-scripts/actions/workflows/action--save-pitch-data.yml/badge.svg
    [data-logs]: https://github.com/CivicTechTO/civictechto-scripts/actions/workflows/action--save-pitch-data.yml
+   [pitches-badge]: https://github.com/CivicTechTO/civictechto-scripts/actions/workflows/action--notify-slack-pitches.yml/badge.svg
+   [pitches-logs]: https://github.com/CivicTechTO/civictechto-scripts/actions/workflows/action--notify-slack-pitches.yml
 
 ## About these Automated Scripts
 

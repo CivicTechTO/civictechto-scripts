@@ -14,6 +14,9 @@ update-shortlinks:
 notify-slack-roles:
 	pipenv run python notify_slack_roles.py
 
+notify-slack-pitches:
+	pipenv run python notify_slack_pitches.py
+
 reset-pitches:
 	# Move from list "Tonight's Pitches" to "Recent Pitches"
 	pipenv run python move_trello_cards.py --verbose \

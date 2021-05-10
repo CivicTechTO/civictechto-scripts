@@ -17,10 +17,14 @@ Yay! Thanks to the pitchers :speaking_head_in_silhouette: who hosted *this week'
 
 ---
 
+Trello board with pitches: <https://link.civictech.ca/pitch-board>
+
+---
+
 :hatching_chick: New
 :hatched_chick: {{ maturity.level_1 }}+ Pitches
 :duck: {{ maturity.level_2 }}+ Pitches
 :owl: {{ maturity.level_3 }}+ Pitches
 :fire: Pitch Streak
 
-Curious how this message gets posted? <https://github.com/civictechto/civictechto-scripts#readme|Start here!>
+Curious how this message gets posted? <https://link.civictech.ca/scripts>
