@@ -29,3 +29,6 @@ reset-pitches:
 
 save-pitch-data:
 	pipenv run python update_pitch_csv.py
+
+zoom2youtube:
+	pipenv run python src/main.py

@@ -1,0 +1,47 @@
+name: Zoom2YouTube
+
+on:
+  workflow_run:
+    workflows: ["Post-Hacknight"]
+    types: [requested]
+  repository_dispatch:
+    types: [force-zoom2youtube]
+
+jobs:
+  zoom2youtube:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          repository: patcon/Zoom2Youtube
+          ref: quick-fixes
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.local/share/virtualenvs
+          key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pipenv-
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.6'
+
+      - run: pip install pipenv
+
+      - run: pipenv sync --dev
+
+      - env:
+          FILE_ENCRYPTION_PASSWORD: ${{ secrets.ZOOM_API_SECRET }}
+        run: make decrypt PASSWORD=$FILE_ENCRYPTION_PASSWORD
+
+      - env:
+          ZOOM_API_KEY: ${{ secrets.ZOOM_API_KEY }}
+          ZOOM_API_SECRET: ${{ secrets.ZOOM_API_SECRET }}
+          ZOOM_EMAIL: civictechtoronto@gmail.com
+          MIN_DURATION: 2
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+        run:
+          make zoom2youtube
