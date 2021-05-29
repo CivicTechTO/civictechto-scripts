@@ -7,6 +7,7 @@ on:
     - cron: '0 8 * * 3'
   repository_dispatch:
     types: [force-post-hacknight]
+  workflow_dispatch:
 
 jobs:
   noop:

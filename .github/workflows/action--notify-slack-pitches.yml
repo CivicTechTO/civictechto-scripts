@@ -4,6 +4,7 @@ on:
   workflow_run:
     workflows: ["Save Pitch Data"]
     types: [completed]
+  workflow_dispatch:
 
 jobs:
   notify-slack-pitches:

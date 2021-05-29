@@ -4,6 +4,7 @@ on:
   workflow_run:
     workflows: ["Post-Hacknight"]
     types: [requested]
+  workflow_dispatch:
 
 jobs:
   notify-slack-pitches:

@@ -6,6 +6,7 @@ on:
     types: [requested]
   repository_dispatch:
     types: [force-update-shortlinks]
+  workflow_dispatch:
 
 jobs:
   update-shortlinks:

@@ -6,6 +6,7 @@ on:
     types: [requested]
   repository_dispatch:
     types: [force-zoom2youtube]
+  workflow_dispatch:
 
 jobs:
   zoom2youtube:

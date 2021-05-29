@@ -4,6 +4,7 @@ on:
   workflow_run:
     workflows: ["Pre-Hacknight"]
     types: [requested]
+  workflow_dispatch:
 
 jobs:
   reset-pitches:

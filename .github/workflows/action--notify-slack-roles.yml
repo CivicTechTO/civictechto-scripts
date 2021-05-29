@@ -4,6 +4,7 @@ on:
   workflow_run:
     workflows: ["Day Before"]
     types: [requested]
+  workflow_dispatch:
 
 jobs:
   notify-slack-roles:
