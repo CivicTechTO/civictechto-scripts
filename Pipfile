@@ -4,22 +4,22 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-click = "*"
-gspread = "*"
-mailchimp3 = "*"
+click = "7.x"
+gspread = "3.1.x"
+mailchimp3 = "3.0.x"
 meetup-api = {editable = true,ref = "develop",git = "https://github.com/patcon/meetup-api.git"}
-oauth2client = "*"
-py-trello = "*"
-PyDrive = "*"
-pystache = "*"
-python-dotenv = "*"
-requests = "*"
-slackclient = "*"
-Jinja2 = "*"
-PyGithub = "*"
+oauth2client = "4.1.x"
+py-trello = "0.14.x"
+PyDrive = "1.3.x"
+pystache = "0.5.x"
+python-dotenv = "0.10.x"
+requests = "2.21.x"
+slackclient = "1.3.x"
+Jinja2 = "2.x"
+PyGithub = "1.43.x"
 anki-meetup-memorizer = {editable = true,ref = "master",git = "https://github.com/civictechto/anki-meetup-memorizer.git"}
-python-dateutil = "*"
-dateparser = "*"
+python-dateutil = "2.8.x"
+dateparser = "0.7.x"
 
 [dev-packages]
 
